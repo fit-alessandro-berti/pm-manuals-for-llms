@@ -1,0 +1,403 @@
+TRADITIONAL EVENT LOGS
+
+In pm4py, the preferred structure for storing traditional event logs are the Pandas dataframes.
+Dataframes are imported using Pandas and formatted for process mining usage using the
+pm4py.format_dataframe(df: pd.DataFrame, case_id: str = constants.CASE_CONCEPT_NAME, activity_key: str = xes_constants.DEFAULT_NAME_KEY, timestamp_key: str = xes_constants.DEFAULT_TIMESTAMP_KEY, start_timestamp_key: str = xes_constants.DEFAULT_START_TIMESTAMP_KEY, timest_format: Optional[str] = None) -> pd.DataFrame
+method.
+
+Previously, we were using a more complex data structure:
+- An EventLog object (imported from pm4py.objects.log.obj) contains a dictionary of attributes at the log level (log.attributes) and provides an iterator over its traces (for trace in log:)
+- A Trace object (imported from pm4py.objects.log.obj) contains a dictionary of attributes at the trace level (trace.attributes) and provides an iterator over its events (for event in trace:). The most important attribute at the trace level is concept:name (the case ID)
+- An Event object is a dictionary associating to some attributes their values. The most important attributes at the event level are concept:name (the activity), time:timestamp (the timestamp), org:resource (the resource).
+
+Also, we were offering an EventStream which is simply a list of events (Event).
+Pandas dataframes, event streams and event logs can be converted from/to each other.
+
+TRADITIONAL PROCESS MODELS
+
+DIRECTLY-FOLLOWS GRAPH is a dictionary associating to each couple of activities the corresponding frequency, example
+{('check ticket', 'decide'): 6, ('check ticket', 'examine casually'): 2, ('check ticket', 'examine thoroughly'): 1}
+
+
+PERFORMANCE DIRECTLY-FOLLOWS GRAPH is a dictionary associating to each couple of activities different aggregations of the time between them, example
+{('check ticket', 'decide'): {'mean': 181960.0, 'median': 129300.0, 'max': 578640.0, 'min': 1800.0, 'sum': 1091760.0, 'stdev': 206034.11756308711}, ('check ticket', 'examine casually'): {'mean': 92430.0, 'median': 92430.0, 'max': 177420.0, 'min': 7440.0, 'sum': 184860.0, 'stdev': 120194.01066608935}, ('check ticket', 'examine thoroughly'): {'mean': 95820.0, 'median': 95820.0, 'max': 95820.0, 'min': 95820.0, 'sum': 95820.0, 'stdev': nan}
+
+PETRI NET
+A Petri net is defined in the class pm4py.objects.petri_net.obj.PetriNet. A name (string unique identifier) must be provided to the constructor.
+The main properties of this bipartite graph are:
+- places (set). A place is defined in the class pm4py.objects.petri_net.obj.PetriNet.Place. A name (string unique identifier) must be provided to the constructor. Places must be added to the net.places set
+- transitions (set). A transition is defined in the class pm4py.objects.petri_net.obj.PetriNet.Transition. A name (string unique identifier) and a label (string) must be provided to the constructor. Places must be added to the net.transitions set
+- arcs (set; an arc can be between a place and a transition, or a transition and a place). An arc must be added using the method pm4py.objects.petri_net.utils.petri_utils.add_arc_from_to(fr, to, net: PetriNet, weight=1, type=None) -> PetriNet.Arc.
+The sets of input/output arcs for the places/transitions are also reported in the in_arcs and out_arcs property of them, not only in the arcs property of the Petri net.
+
+To remove places, transitions and arcs from the Petri nets, you need to carefully use the following methods:
+- pm4py.objects.petri_net.utils.petri_utils.remove_place(net: PetriNet, place: PetriNet.Place) -> PetriNet
+- pm4py.remove_transition(net: PetriNet, trans: PetriNet.Transition) -> PetriNet
+- pm4py.remove_arc(net: PetriNet, arc: PetriNet.Arc) -> PetriNet
+
+ACCEPTING PETRI NET
+A Petri net plus an initial and a final marking is an accepting Petri net.
+The markings are dictionaries defined in the class pm4py.objects.petri_net.obj.Marking.
+They associate to a subset of places of the Petri net the corresponding number of tokens.
+The initial marking is the initial state of the Petri net, while the final marking is the final state of the Petri net.
+Example construction and distruction of an accepting Petri net:
+
+from pm4py.objects.petri_net.obj import PetriNet, Marking
+from pm4py.objects.petri_net.utils import petri_utils
+net = PetriNet(name="example")
+source = PetriNet.Place(name="source")
+sink = PetriNet.Place(name="sink")
+execute_activity = PetriNet.Transition(name="execute_activity", label="Execute Activity")
+net.places.add(source)
+net.places.add(sink)
+net.transitions.add(execute_activity)
+petri_utils.add_arc_from_to(source, execute_activity, net)
+petri_utils.add_arc_from_to(execute_activity, sink, net)
+im = Marking()
+im[source] = 1
+fm = Marking()
+fm[sink] = 1
+# finally, remove the sink place
+petri_utils.remove_place(net, sink)
+del fm[sink]
+
+
+PROCESS TREE
+A process tree is a hierarchical process model.
+The following operators are defined for process trees:
+-> ( A, B ) tells that the process tree A should be executed before the process tree B
+X ( A, B ) tells that there is an exclusive choice between executing the process tree A or the process tree B
++ ( A, B ) tells that A and B are executed in true concurrency.
+* ( A, B ) is a loop. So the process tree A is executed, then either you exit the loop, or you execute B and then A again (this can happen several times until the loop is exited).
+the leafs of a process tree are either activities (denoted by 'X' where X is the name of the activity) or silent steps (indicated by tau).
+An example process tree follows:
++ ( 'A', -> ( 'B', 'C' ) )
+tells that you should execute B before executing C. In true concurrency, you can execute A. So the possible traces are A->B->C, B->A->C, B->C->A.
+
+ProcessTree objects are defined in pm4py.objects.process_tree.obj.ProcessTree
+They have as properties:
+- parent (the parent process tree, which is left empty for the root node)
+- children (the child ProcessTree objects)
+- operator (one of the pm4py.objects.process_tree.obj.Operator enumeration values: Operator.SEQUENCE, Operator.XOR, Operator.PARALLEL, Operator.LOOP)
+- label (if the ProcessTree is a leaf, then it is valued with the label)
+The properties are mimicked in the constructor. Example construction:
+
+from pm4py.objects.process_tree.obj import ProcessTree, Operator
+root = ProcessTree(operator=Operator.PARALLEL)
+A = ProcessTree(label="A", parent=root)
+seq = ProcessTree(operator=Operator.SEQUENCE, parent=root)
+B = ProcessTree(label="B", parent=seq)
+C = ProcessTree(label="C", parent=seq)
+seq.children.append(B)
+seq.children.append(C)
+root.children.append(A)
+root.children.append(seq)
+
+
+POWL MODELS
+A partially ordered workflow language (POWL) is a partially ordered graph representation of a process, extended with control-flow operators for modeling choice and loop structures. There are four types of POWL models:
+- an activity (identified by its label, i.e., 'M' identifies the activity M). Silent activities with empty labels (tau labels) are also supported.
+- a choice of other POWL models (an exclusive choice between the sub-models A and B is identified by X ( A, B ) )
+- a loop node between two POWL models (a loop between the sub-models A and B is identified by * ( A, B ) and tells that you execute A, then you either exit the loop or execute B and then A again, this is repeated until you exit the loop).
+- a partial order over a set of POWL models. A partial order is a binary relation that is irreflexive, transitive, and asymmetric. A partial order sets an execution order between the sub-models (i.e., the target node cannot be executed before the source node is completed). Unconnected nodes in a partial order are considered to be concurrent. An example is PO=(nodes={ NODE1, NODE2 }, order={ })
+where NODE1 and NODE2 are independent and can be executed in parallel. Another example is PO=(nodes={ NODE1, NODE2 }, order={ NODE1-->NODE2 }) where NODE2 can only be executed after NODE1 is completed.
+A more advanced example: PO=(nodes={ NODE1, NODE2, NODE3, X ( NODE4, NODE5 ) }, order={ NODE1-->NODE2, NODE1-->X ( NODE4, NODE5 ), NODE2-->X ( NODE4, NODE5 ) }), in this case, NODE2 can be executed only after NODE1 is completed, while the choice between NODE4 and NODE5 needs to wait until both NODE1 and NODE2 are finalized.
+
+POWL models are defined in pm4py.objects.powl.obj in different classes:
+- SilentTransition defines a silent transition (without operator and without label)
+- Transition defines a transition with label (without operator)
+- StrictPartialOrder defines a POWL model with a main property: nodes (the children POWL models). The order between elements can be added with the method .order.add_edge(source_node, target_node). The nodes must be provided in the constructor, and cannot be modified afterwards.
+- OperatorPOWL defines a POWL model with two main properties: children (the children POWL models) and operator (which can be either pm4py.objects.process_tree.obj.Operator.XOR or pm4py.objects.process_tree.obj.Operator.LOOP). The children must be provided in the constructor, and cannot be modified afterwards.
+The properties are mimcked in the construtors. In this example, a POWL model is constructed where a loop between A and B is followed by either C or a silent transition.
+
+import pm4py
+from pm4py.objects.powl.obj import StrictPartialOrder, OperatorPOWL, Transition, SilentTransition
+from pm4py.objects.process_tree.obj import Operator
+A = Transition(label="A")
+B = Transition(label="B")
+C = Transition(label="C")
+skip = SilentTransition()
+loop = OperatorPOWL(operator=Operator.LOOP, children=[A, B])
+xor = OperatorPOWL(operator=Operator.XOR, children=[C, skip])
+root = StrictPartialOrder(nodes=[loop, xor])
+root.order.add_edge(loop, xor)
+
+
+LOG SKELETON
+The Log Skeleton process model contains the following declarative constraints:
+- Equivalence (if the first activity occurs, then it has the same occurrences as the second one)
+- Always Before (if the first activity occur, then the second activity should have been executed previously)
+- Always After (if the first activity occur, then the second activity is executed in one of the following events)
+- Never Together (the two activities cannot co-exist inside the same case)
+- Activity Occurrences (bounds the number of occurrences for an activity in a case)
+- Directly-Follows Constraints (if the first activity occurs, then the second activity shall occur immediately after)
+The Log Skeleton is expressed as a Python dictionary containing the keys: 'equivalence', 'always_before', 'always_after', 'never_together', 'activ_freq', 'directly_follows'.
+The values associated to 'equivalence', 'always_before', 'always_after', 'never_together', 'directly_follows' are sets containing the couples of activities satisfying the constraints.
+The value associated to 'activ_freq' is a dictionary whose keys are the activities, and the values are the allowed number of occurrences for the given activity. For example, {'A': {0, 1}, 'B': {1, 2}} tells that A could occur 0 or 1 time inside a case, while B could occur 1 or 2 times.
+
+
+DECLARE
+A DECLARE model in pm4py is expressed as a Python dictionary containing the following keys:
+'existence', 'absence', 'exactly_one', 'init', 'responded_existence', 'coexistence', 'response', 'precedence', 'succession', 'altresponse', 'altprecedence', 'altsuccession', 'chainresponse', 'chainprecedence', 'chainsuccession', 'noncoexistence', 'nonsuccession', 'nonchainsuccession'
+For the keys {'existence', 'absence', 'exactly_one', 'init'}, the value is a dictionary containing as keys the activities and as corresponding value the support (please set it to 1.0) and confidence of the declarative rule.
+For the keys {'responded_existence', 'coexistence', 'response', 'precedence', 'succession', 'altresponse', 'altprecedence', 'altsuccession', 'chainresponse', 'chainprecedence', 'chainsuccession', 'noncoexistence', 'nonsuccession', 'nonchainsuccession'}, the value is a dictionary containing as keys the activities and as corresponding value the support (please set it to 1.0) and confidence of the declarative rule.
+
+
+TEMPORAL PROFILE
+The temporal profile is a model describing the average and the standard deviation of the times between couples of activities eventually (not only directly) following each other in at least a process execution (so in a trace <A,B,C,D> the couples (A,B) (A,C) (A,D) (B,C) (B,D) (C,D) shall be considered). Given a positive value ZETA, a deviation occurs in a process execution when the time between two activities is lower than AVG - ZETA * STDEV or greater than AVG + ZETA * STDEV.
+The temporal profile is expressed as a Python dictionary associating to some couples of activities the average and the standard deviation of the times. Example: {('A', 'B'): (86400, 3600), ('B', 'C'): (3600, 3600)} indicates that the average time between A and B is 1 day, while the standard deviation is 1 hour. On the other hand, the average time between B and C is 1 hour, while the standard deviation is 1 hour.
+
+
+Aside from object-centric event logs, the following methods are available in pm4py:
+
+pm4py.discover_dfg(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Tuple[dict, dict, dict]
+Discovers a Directly-Follows Graph (DFG) from a log. This method returns a dictionary with the couples of directly-following activities (in the log) as keys and the frequency of relation as value.
+
+pm4py.discover_performance_dfg(log: Union[EventLog, pd.DataFrame], business_hours: bool = False, business_hour_slots=constants.DEFAULT_BUSINESS_HOUR_SLOTS, workcalendar=constants.DEFAULT_BUSINESS_HOURS_WORKCALENDAR, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Tuple[dict, dict, dict]
+Discovers a performance directly-follows graph from an event log. This method returns a dictionary with the couples of directly-following activities (in the log) as keys and the performance of relation as value.
+
+pm4py.discover_petri_net_alpha(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Tuple[PetriNet, Marking, Marking]
+Discovers a Petri net using the Alpha Miner.
+
+pm4py.discover_petri_net_ilp(log: Union[EventLog, pd.DataFrame], alpha: float = 1.0, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Tuple[PetriNet, Marking, Marking]
+Discovers a Petri net using the ILP Miner.
+
+pm4py.discover_petri_net_alpha_plus(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Tuple[PetriNet, Marking, Marking]
+Discovers a Petri net using the Alpha+ algorithm.
+
+pm4py.discover_petri_net_inductive(log: Union[EventLog, pd.DataFrame, DFG], multi_processing: bool = constants.ENABLE_MULTIPROCESSING_DEFAULT, noise_threshold: float = 0.0, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", disable_fallthroughs: bool = False) -> Tuple[PetriNet, Marking, Marking]
+Discovers a Petri net using the inductive miner algorithm.
+
+pm4py.discover_petri_net_heuristics(log: Union[EventLog, pd.DataFrame], dependency_threshold: float = 0.5, and_threshold: float = 0.65, loop_two_threshold: float = 0.5, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Tuple[PetriNet, Marking, Marking]
+Discover a Petri net using the Heuristics Miner.
+
+pm4py.discover_process_tree_inductive(log: Union[EventLog, pd.DataFrame, DFG], noise_threshold: float = 0.0, multi_processing: bool = constants.ENABLE_MULTIPROCESSING_DEFAULT, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", disable_fallthroughs: bool = False) -> ProcessTree
+Discovers a process tree using the inductive miner algorithm.
+
+pm4py.discover_heuristics_net(log: Union[EventLog, pd.DataFrame], dependency_threshold: float = 0.5, and_threshold: float = 0.65, loop_two_threshold: float = 0.5, min_act_count: int = 1, min_dfg_occurrences: int = 1, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", decoration: str = "frequency") -> HeuristicsNet
+Discovers an heuristics net.
+
+pm4py.derive_minimum_self_distance(log: Union[DataFrame, EventLog, EventStream], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, int]
+This algorithm computes the minimum self-distance for each activity observed in an event log. The self distance of a in <a> is infinity, of a in <a,a> is 0, in <a,b,a> is 1, etc. The activity key 'concept:name' is used.
+
+pm4py.discover_footprints(*args: Union[EventLog, Tuple[PetriNet, Marking, Marking], ProcessTree]) -> Union[List[Dict[str, Any]], Dict[str, Any]]
+Discovers the footprints out of the provided event log / process model.
+
+pm4py.discover_eventually_follows_graph(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[Tuple[str, str], int]
+Gets the eventually follows graph from a log object.
+
+pm4py.discover_bpmn_inductive(log: Union[EventLog, pd.DataFrame, DFG], noise_threshold: float = 0.0, multi_processing: bool = constants.ENABLE_MULTIPROCESSING_DEFAULT, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", disable_fallthroughs: bool = False) -> BPMN
+Discovers a BPMN using the Inductive Miner algorithm.
+
+pm4py.discover_transition_system(log: Union[EventLog, pd.DataFrame], direction: str = "forward", window: int = 2, view: str = "sequence", activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> TransitionSystem
+Discovers a transition system as described in the process mining book "Process Mining: Data Science in Action"
+
+pm4py.discover_prefix_tree(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Trie
+Discovers a prefix tree from the provided log object.
+
+pm4py.discover_temporal_profile(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[Tuple[str, str], Tuple[float, float]]
+Discovers a temporal profile from a log object. The output is a dictionary containing, for every couple of activities eventually following in at least a case of the log, the average and the standard deviation of the difference of the timestamps.
+
+pm4py.discover_log_skeleton(log: Union[EventLog, pd.DataFrame], noise_threshold: float = 0.0, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, Any]
+Discovers a log skeleton from an event log.
+
+pm4py.discover_declare(log: Union[EventLog, pd.DataFrame], allowed_templates: Optional[Set[str]] = None, considered_activities: Optional[Set[str]] = None, min_support_ratio: Optional[float] = None, min_confidence_ratio: Optional[float] = None, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, Dict[Any, Dict[str, int]]]
+Discovers a DECLARE model from an event log.
+
+pm4py.discover_powl(log: Union[EventLog, pd.DataFrame], variant=POWLDiscoveryVariant.MAXIMAL, filtering_weight_factor: float = 0.0, order_graph_filtering_threshold: float = None, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> POWL
+Discovers a POWL model from an event log.
+
+pm4py.discover_batches(log: Union[EventLog, pd.DataFrame], merge_distance: int = 15 * 60, min_batch_size: int = 2, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", resource_key: str = "org:resource") -> List[Tuple[Tuple[str, str], int, Dict[str, Any]]]
+Discover batches from the provided log object. We say that an activity is executed in batches by a given resource when the resource executes several times the same activity in a short period of time. Identifying such activities may identify points of the process that can be automated, since the activity of the person may be repetitive. The following categories of batches are detected: Simultaneous (all the events in the batch have identical start and end timestamps); Batching at start (all the events in the batch have identical start timestamp); Batching at end (all the events in the batch have identical end timestamp); Sequential batching (for all the consecutive events, the end of the first is equal to the start of the second); Concurrent batching (for all the consecutive events that are not sequentially matched);
+
+pm4py.conformance_diagnostics_token_based_replay(log: Union[EventLog, pd.DataFrame], petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", return_diagnostics_dataframe: bool = constants.DEFAULT_RETURN_DIAGNOSTICS_DATAFRAME, opt_parameters: Optional[Dict[Any, Any]] = None) -> List[Dict[str, Any]]
+Apply token-based replay for conformance checking analysis. The methods return the full token-based-replay diagnostics. Token-based replay matches a trace and a Petri net model, starting from the initial place, in order to discover which transitions are executed and in which places we have remaining or missing tokens for the given process instance. Token-based replay is useful for Conformance Checking: indeed, a trace is fitting according to the model if, during its execution, the transitions can be fired without the need to insert any missing token. If the reaching of the final marking is imposed, then a trace is fitting if it reaches the final marking without any missing or remaining tokens. The output of the token-based replay, stored in the variable replayed_traces, contains for each trace of the log: trace_is_fit: boolean value (True/False) that is true when the trace is according to the model; activated_transitions: list of transitions activated in the model by the token-based replay; reached_marking: marking reached at the end of the replay; missing_tokens: number of missing tokens; consumed_tokens: number of consumed tokens; remaining_tokens: number of remaining tokens; produced_tokens: number of produced tokens;
+
+pm4py.conformance_diagnostics_alignments(log: Union[EventLog, pd.DataFrame], *args, multi_processing: bool = constants.ENABLE_MULTIPROCESSING_DEFAULT, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", variant_str : Optional[str] = None, return_diagnostics_dataframe: bool = constants.DEFAULT_RETURN_DIAGNOSTICS_DATAFRAME, **kwargs) -> List[Dict[str, Any]]
+Apply the alignments algorithm between a log and a process model. The methods return the full alignment diagnostics. Alignment-based replay aims to find one of the best alignment between the trace and the model. For each trace, the output of an alignment is a list of couples where the first element is an event (of the trace) or » and the second element is a transition (of the model) or ». For each couple, the following classification could be provided: Sync move: the classification of the event corresponds to the transition label; in this case, both the trace and the model advance in the same way during the replay. Move on log: for couples where the second element is », it corresponds to a replay move in the trace that is not mimicked in the model. This kind of move is unfit and signal a deviation between the trace and the model. Move on model: for couples where the first element is », it corresponds to a replay move in the model that is not mimicked in the trace. For moves on model, we can have the following distinction: Moves on model involving hidden transitions: in this case, even if it is not a sync move, the move is fit. Moves on model not involving hidden transitions: in this case, the move is unfit and signals a deviation between the trace and the model. With each trace, a dictionary containing among the others the following information is associated:
+
+pm4py.fitness_token_based_replay(log: Union[EventLog, pd.DataFrame], petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, float]
+Calculates the fitness using token-based replay. The fitness is calculated on a log-based level.
+
+pm4py.fitness_alignments(log: Union[EventLog, pd.DataFrame], petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, multi_processing: bool = constants.ENABLE_MULTIPROCESSING_DEFAULT, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", variant_str : Optional[str] = None) -> Dict[str, float]
+Calculates the fitness using alignments.
+
+pm4py.precision_token_based_replay(log: Union[EventLog, pd.DataFrame], petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> float
+Calculates the precision precision using token-based replay.
+
+pm4py.precision_alignments(log: Union[EventLog, pd.DataFrame], petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, multi_processing: bool = constants.ENABLE_MULTIPROCESSING_DEFAULT, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> float
+Calculates the precision of the model w.r.t. the event log using alignments.
+
+pm4py.generalization_tbr(log: Union[EventLog, pd.DataFrame], petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> float
+Computes the generalization of the model (against the event log).
+
+pm4py.conformance_temporal_profile(log: Union[EventLog, pd.DataFrame], temporal_profile: Dict[Tuple[str, str], Tuple[float, float]], zeta: float = 1.0, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", return_diagnostics_dataframe: bool = constants.DEFAULT_RETURN_DIAGNOSTICS_DATAFRAME) -> List[List[Tuple[float, float, float, float]]]
+Performs conformance checking on the provided log with the provided temporal profile. The result is a list of time-based deviations for every case. E.g. if the log on top of which the conformance is applied is the following (1 case): A (timestamp: 2000-01)    B (timestamp: 2002-01) The difference between the timestamps of A and B is two years. If the temporal profile: {('A', 'B'): (1.5 months, 0.5 months), ('A', 'C'): (5 months, 0), ('A', 'D'): (2 months, 0)} is specified, and zeta is set to 1, then the aforementioned case would be deviating (considering the couple of activities ('A', 'B')), because 2 years > 1.5 months + 0.5 months.
+
+pm4py.conformance_declare(log: Union[EventLog, pd.DataFrame], declare_model: Dict[str, Dict[Any, Dict[str, int]]], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", return_diagnostics_dataframe: bool = constants.DEFAULT_RETURN_DIAGNOSTICS_DATAFRAME) -> List[Dict[str, Any]]
+Applies conformance checking against a DECLARE model.
+
+pm4py.conformance_log_skeleton(log: Union[EventLog, pd.DataFrame], log_skeleton: Dict[str, Any], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", return_diagnostics_dataframe: bool = constants.DEFAULT_RETURN_DIAGNOSTICS_DATAFRAME) -> List[Set[Any]]
+Performs conformance checking using the log skeleton.
+
+
+
+
+OBJECT-CENTRIC EVENT LOGS
+
+The Object-Centric Event Log (OCEL) 2.0 specification comes with different file formats: JSON (.json or .jsonocel), XML (.xml or .xmlocel), SQLite (.sqlite) or CSV (.csv).
+
+In the pm4py process mining library, the OCEL class is a collection of different dataframes, containing at least the following columns:
+
+
+ocel.events
+ #   Column          Non-Null Count  Dtype
+---  ------          --------------  -----
+ 0   ocel:eid        23 non-null     string
+ 1   ocel:timestamp  23 non-null     datetime64[ns, UTC]
+ 2   ocel:activity   23 non-null     string
+ 
+ocel.objects
+#   Column     Non-Null Count  Dtype
+---  ------     --------------  -----
+ 0   ocel:oid   15 non-null     string
+ 1   ocel:type  15 non-null     string
+
+ocel.relations 
+ #   Column          Non-Null Count  Dtype
+---  ------          --------------  -----
+ 0   ocel:eid        39 non-null     string
+ 1   ocel:activity   39 non-null     string
+ 2   ocel:timestamp  39 non-null     datetime64[ns, UTC]
+ 3   ocel:oid        39 non-null     string
+ 4   ocel:type       39 non-null     string
+ 5   ocel:qualifier  0 non-null      object
+
+ 
+The 'ocel.relations' dataframe contains the many-to-many relationships between events and objects (E2O). An event can be related to different objects of different object types. The relationship can be qualified (i.e., described by a qualifier).
+
+Moreover, there is an ocel.o2o dataframe containing the object to object (O2O) relationships. Also these relationships can be qualified.
+
+
+ #   Column          Non-Null Count  Dtype
+---  ------          --------------  -----
+ 0   ocel:oid        0 non-null      string
+ 1   ocel:oid_2      0 non-null      string
+ 2   ocel:qualifier  0 non-null      float64
+
+
+In the pm4py process mining library, the following methods are available to work on object-centric event logs:
+
+pm4py.read_ocel2(file_path: str, encoding: str = constants.DEFAULT_ENCODING) -> OCEL
+Reads an OCEL2.0 event log from the disk
+
+pm4py.write_ocel2(ocel: OCEL, file_path: str, encoding: str = constants.DEFAULT_ENCODING)
+Writes an OCEL2.0 object to disk
+
+pm4py.ocel_get_object_types(ocel: OCEL) -> List[str]
+Gets the list of object types contained in the object-centric event log (e.g., ["order", "item", "delivery"]).
+
+pm4py.ocel_get_attribute_names(ocel: OCEL) -> List[str]
+Gets the list of attributes at the event and the object level of an object-centric event log (e.g. ["cost", "amount", "name"])
+
+pm4py.ocel_flattening(ocel: OCEL, object_type: str) -> pd.DataFrame
+Flattens the object-centric event log to a traditional event log with the choice of an object type. In the flattened log, the objects of a given object type are the cases, and each case contains the set of events related to the object.
+
+pm4py.ocel_object_type_activities(ocel: OCEL) -> Dict[str, Collection[str]]
+Gets the set of activities performed for each object type
+
+pm4py.ocel_objects_ot_count(ocel: OCEL) -> Dict[str, Dict[str, int]]
+Counts for each event the number of related objects per type
+
+pm4py.ocel_temporal_summary(ocel: OCEL) -> pd.DataFrame
+Returns the ``temporal summary'' from an object-centric event log. The temporal summary aggregates all the events performed in the same timestamp, and reports the list of activities and the involved objects.
+
+pm4py.ocel_objects_summary(ocel: OCEL) -> pd.DataFrame
+Gets the objects summary of an object-centric event log
+
+pm4py.ocel_objects_interactions_summary(ocel: OCEL) -> pd.DataFrame
+Gets the objects interactions summary of an object-centric event log. The objects interactions summary has a row for every combination (event, related object, other related object). Properties such as the activity of the event, and the object types of the two related objects, are included.
+	
+pm4py.discover_ocdfg(ocel: OCEL, business_hours=False, business_hour_slots=constants.DEFAULT_BUSINESS_HOUR_SLOTS) -> Dict[str, Any]:
+Discovers an OC-DFG from an object-centric event log.
+
+pm4py.discover_oc_petri_net(ocel: OCEL, inductive_miner_variant: str = "im", diagnostics_with_tbr: bool = False) -> Dict[str, Any]
+Discovers an object-centric Petri net from the provided object-centric event log.
+
+pm4py.discover_objects_graph(ocel: OCEL, graph_type: str = "object_interaction") -> Set[Tuple[str, str]]
+Discovers an object graph from the provided object-centric event log
+
+pm4py.ocel_o2o_enrichment(ocel: OCEL, included_graphs: Optional[Collection[str]] = None) -> OCEL
+Inserts the information inferred from the graph computations (pm4py.discover_objects_graph) in the list of O2O relations of the OCEL.
+
+pm4py.ocel_e2o_lifecycle_enrichment(ocel: OCEL) -> OCEL
+Inserts lifecycle-based information (when an object is created/terminated or other types of relations) in the list of E2O relations of the OCEL
+
+pm4py.sample_ocel_objects(ocel: OCEL, num_objects: int) -> OCEL
+Given an object-centric event log, returns a sampled event log with a subset of the objects that is chosen in a random way. Only the events related to at least one of these objects are filtered from the event log. As a note, the relationships between the different objects are probably going to be ruined by this sampling.
+
+pm4py.sample_ocel_connected_components(ocel: OCEL, connected_components: int = 1, max_num_events_per_cc: int = sys.maxsize, max_num_objects_per_cc: int = sys.maxsize, max_num_e2o_relations_per_cc: int = sys.maxsize) -> OCEL
+Given an object-centric event log, returns a sampled event log with a subset of the executions. The number of considered connected components need to be specified by the user.
+
+pm4py.ocel_drop_duplicates(ocel: OCEL) -> OCEL
+Drop relations between events and objects happening at the same time, with the same activity, to the same object identifier. This ends up cleaning the OCEL from duplicate events.
+
+pm4py.ocel_merge_duplicates(ocel: OCEL, have_common_object: Optional[bool]=False) -> OCEL
+Merge events in the OCEL that happen with the same activity at the same timestamp
+
+pm4py.ocel_sort_by_additional_column(ocel: OCEL, additional_column: str, primary_column: str = "ocel:timestamp") -> OCEL
+Sorts the OCEL not only based on the timestamp column and the index, but using an additional sorting column that further determines the order of the events happening at the same timestamp.
+
+pm4py.ocel_add_index_based_timedelta(ocel: OCEL) -> OCEL
+Adds a small time-delta to the timestamp column based on the current index of the event. This ensures the correct ordering of the events in any object-centric process mining solution.
+
+pm4py.cluster_equivalent_ocel(ocel: OCEL, object_type: str, max_objs: int = sys.maxsize) -> Dict[str, Collection[OCEL]]
+Perform a clustering of the object-centric event log, based on the 'executions' of a single object type. Equivalent 'executions' are grouped in the output dictionary.
+
+pm4py.read_ocel2(file_path: str, encoding: str = constants.DEFAULT_ENCODING) -> OCEL
+Reads an OCEL2.0 event log
+
+pm4py.write_ocel2(ocel: OCEL, file_path: str, encoding: str = constants.DEFAULT_ENCODING)
+Writes an OCEL2.0 object to disk
+
+pm4py.filter_ocel_event_attribute(ocel: OCEL, attribute_key: str, attribute_values: Collection[Any], positive: bool = True) -> OCEL
+Filters the object-centric event log on the provided event attributes values
+
+pm4py.filter_ocel_object_attribute(ocel: OCEL, attribute_key: str, attribute_values: Collection[Any], positive: bool = True) -> OCEL
+Filters the object-centric event log on the provided object attributes values
+
+pm4py.filter_ocel_object_types_allowed_activities(ocel: OCEL, correspondence_dict: Dict[str, Collection[str]]) -> OCEL
+Filters an object-centric event log keeping only the specified object types with the specified activity set (filters out the rest).
+
+pm4py.filter_ocel_object_per_type_count(ocel: OCEL, min_num_obj_type: Dict[str, int]) -> OCEL
+Filters the events of the object-centric logs which are related to at least the specified amount of objects per type.
+
+pm4py.filter_ocel_start_events_per_object_type(ocel: OCEL, object_type: str) -> OCEL
+Filters the events in which a new object for the given object type is spawn. (E.g. an event with activity "Create Order" might spawn new orders).
+
+pm4py.filter_ocel_end_events_per_object_type(ocel: OCEL, object_type: str) -> OCEL
+Filters the events in which an object for the given object type terminates its lifecycle. (E.g. an event with activity "Pay Order" might terminate an order).
+
+pm4py.filter_ocel_events_timestamp(ocel: OCEL, min_timest: Union[datetime.datetime, str], max_timest: Union[datetime.datetime, str], timestamp_key: str = "ocel:timestamp") -> OCEL
+Filters the object-centric event log keeping events in the provided timestamp range
+
+pm4py.filter_ocel_object_types(ocel: OCEL, obj_types: Collection[str], positive: bool = True, level: int = 1) -> OCEL
+Filters the object types of an object-centric event log.
+
+pm4py.filter_ocel_objects(ocel: OCEL, object_identifiers: Collection[str], positive: bool = True, level: int = 1) -> OCEL
+Filters the object identifiers of an object-centric event log.
+
+pm4py.filter_ocel_events(ocel: OCEL, event_identifiers: Collection[str], positive: bool = True) -> OCEL
+Filters the event identifiers of an object-centric event log.
+
+pm4py.filter_ocel_cc_object(ocel: OCEL, object_id: str, conn_comp: Optional[List[List[str]]] = None, return_conn_comp: bool = False) -> Union[OCEL, Tuple[OCEL, List[List[str]]]]
+Returns the connected component of the object-centric event log to which the object with the provided identifier belongs.
+
+pm4py.filter_ocel_cc_length(ocel: OCEL, min_cc_length: int, max_cc_length: int) -> OCEL
+Keeps only the objects in an OCEL belonging to a connected component with a length falling in a specified range
+
+pm4py.filter_ocel_cc_otype(ocel: OCEL, otype: str, positive: bool = True) -> OCEL
+Filters the objects belonging to the connected components having at least an object of the provided object type.
+
+pm4py.filter_ocel_cc_activity(ocel: OCEL, activity: str) -> OCEL
+Filters the objects belonging to the connected components having at least an event with the provided activity.
