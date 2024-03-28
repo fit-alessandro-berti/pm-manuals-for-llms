@@ -300,3 +300,35 @@ pql.add(PQLColumn(name="Occurrences", query="COUNT(PU_FIRST(\"Cases\", \"Events\
 Note that the pull-up aggregation requires two distinct tables to be applied, and cannot be applied on a single table.
 Usually, it is applied on the case table, aggregating on the activity table.
 
+Celonis offers moving aggregation operators.
+The general syntax is:
+MOVING_X(\"Table\".\"Column\", start, end)
+
+in which MOVING_X can be: MOVING_AVG, MOVING_COUNT_DISTINCT, MOVING_COUNT, MOVING_MAX, MOVING_MEDIAN, MOVING_MIN, MOVING_STDEV, MOVING_SUM, MOVED_TRIMMED_MEAN, MOVING_VAR
+
+start is the start of the window relative to the current row (negative or positive integer)
+end is the end of the window relative to the current row (negative or positive integer)
+
+RUNNING_SUM (or alternatively RUNNING_TOTAL) returns the sum of all the previous rows.
+The RUNNING_SUM operator accepts also an order on the rows, for example:
+
+RUNNING_SUM(\"Events\".\"Cost\", ORDER BY ( \"Events\".\"Timestamp\" ))
+
+
+Other process operators:
+
+ACTIVATION_COUNT(\"Activity Table\".\"Column\")   tells how many times an activity has already occurred
+ACTIVIY_LAG(\"Activity Table\".\"Column\", offset)    returns the value for the row preceding (by offset) the current row
+ACTIVIY_LEAD(\"Activity Table\".\"Column\", offset)   returns the value for the row succeedings (by offset) the current row
+INDEX_ACTIVITY_LOOP(\"Activity Table\".\"Column\")    returns how many times every activity has occurred in direct succession
+INDEX_ACTIVITY_ORDER(\"Activity Table\".\"Column\")   returns the position of each activity in the case
+INDEX_ACTIVITY_LOOP_REVERSE(\"Activity Table\".\"Column\")    returns how many times every activity has occurred in direct succession in reverse order
+INDEX_ACTIVITY_ORDER_REVERSE(\"Activity Table\".\"Column\")   returns the position of each activity in the case in reverse order
+
+Example computation of work-in-progress at every point in time of a process (counting how many cases are open at the specific point in time):
+
+pql = PQL()
+pql.add(PQLColumn(name="Case Identifier", query="\"Events\".\"CaseID\""))
+pql.add(PQLColumn(name="Activity", query="\"Events\".\"Activity\""))
+pql.add(PQLColumn(name="Timestamp", query="\"Events\".\"Timestamp\""))
+pql.add(PQLColumn(name="Work in Progress", query="RUNNING_SUM( CASE WHEN INDEX_ACTIVITY_ORDER ( \"Events\".\"Activity\" ) = 1 THEN 1 WHEN INDEX_ACTIVITY_ORDER_REVERSE ( \"Events\".\"Activity\" ) = 1 THEN -1 ELSE 0 END, ORDER BY ( \"Events\".\"Timestamp\" ) )"))
