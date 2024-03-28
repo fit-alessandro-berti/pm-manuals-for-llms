@@ -150,6 +150,28 @@ The temporal profile is expressed as a Python dictionary associating to some cou
 
 Aside from object-centric event logs, the following methods are available in pm4py:
 
+pm4py.format_dataframe(df: pd.DataFrame, case_id: str = constants.CASE_CONCEPT_NAME, activity_key: str = xes_constants.DEFAULT_NAME_KEY, timestamp_key: str = xes_constants.DEFAULT_TIMESTAMP_KEY, start_timestamp_key: str = xes_constants.DEFAULT_START_TIMESTAMP_KEY, timest_format: Optional[str] = None) -> pd.DataFrame
+Give the appropriate format on the dataframe, for process mining purposes.
+
+pm4py.parse_process_tree(tree_string: str) -> ProcessTree
+Parse a process tree from a string
+:param tree_string: String representing a process tree (e.g. '-> ( 'A', O ( 'B', 'C' ), 'D' )'). Operators are '->': sequence, '+': parallel, 'X': xor choice, '*': binary loop, 'O' or choice
+
+pm4py.parse_powl_model_string(powl_string: str) -> POWL
+Parse a POWL model from a string representation of the process model
+
+pm4py.parse_event_log_string(traces: Collection[str], sep: str = ",", activity_key: str = xes_constants.DEFAULT_NAME_KEY, timestamp_key: str = xes_constants.DEFAULT_TIMESTAMP_KEY, case_id_key: str = constants.CASE_CONCEPT_NAME, return_legacy_log_object: bool = constants.DEFAULT_READ_XES_LEGACY_OBJECT) -> Union[EventLog, pd.DataFrame]
+Parse a collection of traces expressed as strings (e.g., ["A,B,C,D", "A,C,B,D", "A,D"]) to a log object (Pandas dataframe)
+
+pm4py.project_on_event_attribute(log: Union[EventLog, pd.DataFrame], attribute_key=xes_constants.DEFAULT_NAME_KEY, case_id_key=None) -> List[List[str]]
+Project the event log on a specified event attribute. The result is a list, containing a list for each case: all the cases are transformed to list of values for the specified attribute.
+
+pm4py.sample_cases(log: Union[EventLog, pd.DataFrame], num_cases: int, case_id_key: str = "case:concept:name") -> Union[EventLog, pd.DataFrame]
+(Random) Sample a given number of cases from the event log.
+
+pm4py.sample_events(log: Union[EventStream, OCEL], num_events: int) -> Union[EventStream, OCEL, pd.DataFrame]
+(Random) Sample a given number of events from the event log.
+
 pm4py.discover_dfg(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Tuple[dict, dict, dict]
 Discovers a Directly-Follows Graph (DFG) from a log. This method returns a dictionary with the couples of directly-following activities (in the log) as keys and the frequency of relation as value.
 
@@ -362,6 +384,18 @@ Converts an input model to a process tree. The input models can either be Petri 
 pm4py.convert_to_reachability_graph(*args: Union[Tuple[PetriNet, Marking, Marking], BPMN, ProcessTree]) -> TransitionSystem
 Converts an input model to a reachability graph (transition system). The input models can either be Petri nets (with markings), BPMN models or process trees. The output is the state-space of the model (i.e., the reachability graph), enocdoed as a ``TransitionSystem`` object.
 
+pm4py.convert_log_to_networkx(log: Union[EventLog, EventStream, pd.DataFrame], include_df: bool = True, case_id_key: str = "concept:name", other_case_attributes_as_nodes: Optional[Collection[str]] = None, event_attributes_as_nodes: Optional[Collection[str]] = None) -> nx.DiGraph
+Converts an event log object to a NetworkX DiGraph object. The nodes of the graph are the events, the cases (and possibly the attributes of the log). The edges are: Connecting each event to the corresponding case (BELONGS_TO type); Connecting every event to the directly-following one (DF type, if enabled); Connecting every case/event to the given attribute values (ATTRIBUTE_EDGE type)
+
+pm4py.convert_log_to_time_intervals(log: Union[EventLog, pd.DataFrame], filter_activity_couple: Optional[Tuple[str, str]] = None, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", start_timestamp_key: str = "time:timestamp") -> List[List[Any]]
+Gets a list of intervals from an event log. Each interval contains two temporally consecutive events and measures the time between the two events (complete timestamp of the first against start timestamp of the second).
+
+pm4py.convert_petri_net_to_networkx(net: PetriNet, im: Marking, fm: Marking) -> nx.DiGraph
+Converts a Petri net to a NetworkX DiGraph. Each place and transition is corresponding to a node in the graph.
+
+pm4py.convert_petri_net_type(net: PetriNet, im: Marking, fm: Marking, type: str = "classic") -> Tuple[PetriNet, Marking, Marking]
+Changes the Petri net (internal) type
+
 pm4py.play_out(*args: Union[Tuple[PetriNet, Marking, Marking], dict, Counter, ProcessTree], **kwargs) -> EventLog
 Performs the playout of the provided model, i.e., gets a set of traces from the model. The function either takes a petri net, initial and final marking, or, a process tree as an input.
 
@@ -380,6 +414,108 @@ PTandLogGenerator: A Generator for Artificial Event Data
 - "or": probability to add an or operator to tree (default 0.0)
 - "silent": probability to add silent activity to a choice or loop operator (default 0.2)
 - "duplicate": probability to duplicate an activity label (default 0.0)
+
+pm4py.split_train_test(log: Union[EventLog, pd.DataFrame], train_percentage: float = 0.8, case_id_key="case:concept:name") -> Union[Tuple[EventLog, EventLog], Tuple[pd.DataFrame, pd.DataFrame]]
+Split an event log in a training log and a test log (for machine learning purposes). Returns the training and the test event log.
+
+pm4py.get_prefixes_from_log(log: Union[EventLog, pd.DataFrame], length: int, case_id_key: str = "case:concept:name") -> Union[EventLog, pd.DataFrame]
+Gets the prefixes of a log of a given length. The returned log object contain the prefixes: if a trace has lower or identical length, it is included as-is; if a trace has greater length, it is cut
+
+pm4py.extract_temporal_features_dataframe(log: Union[EventLog, pd.DataFrame], grouper_freq="W", activity_key="concept:name", timestamp_key="time:timestamp", case_id_key=None, start_timestamp_key="time:timestamp", resource_key="org:resource") -> pd.DataFrame
+Extracts a dataframe containing the temporal features of the provided log object. Implements the approach described in the paper: Pourbafrani, Mahsa, Sebastiaan J. van Zelst, and Wil MP van der Aalst. "Supporting automatic system dynamics model generation for simulation in the context of process mining." International Conference on Business Information Systems. Springer, Cham, 2020.
+
+pm4py.discover_handover_of_work_network(log: Union[EventLog, pd.DataFrame], beta=0, resource_key: str = "org:resource", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> SNA
+Calculates the handover of work network of the event log. The handover of work network is essentially the DFG of the event log, however, using the resource as a node of the graph, instead of the activity. As such, to use this, resource information should be present in the event log.
+
+pm4py.discover_working_together_network(log: Union[EventLog, pd.DataFrame], resource_key: str = "org:resource", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> SNA
+Calculates the working together network of the process. Two nodes resources are connected in the graph if the resources collaborate on an instance of the process.
+
+pm4py.discover_activity_based_resource_similarity(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", resource_key: str = "org:resource", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> SNA
+Calculates similarity between the resources in the event log, based on their activity profiles.
+
+pm4py.discover_subcontracting_network(log: Union[EventLog, pd.DataFrame], n=2, resource_key: str = "org:resource", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> SNA
+Calculates the subcontracting network of the process.
+
+pm4py.discover_organizational_roles(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", resource_key: str = "org:resource", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> List[Role]
+Mines the organizational roles. A role is a set of activities in the log that are executed by a similar (multi)set of resources. Hence, it is a specific function into organization. Grouping the activities in roles can help: Reference paper: Burattin, Andrea, Alessandro Sperduti, and Marco Veluscek. “Business models enhancement through discovery of roles.” 2013 IEEE Symposium on Computational Intelligence and Data Mining (CIDM). IEEE, 2013.
+
+pm4py.discover_network_analysis(log: Union[pd.DataFrame, EventLog, EventStream], out_column: str, in_column: str, node_column_source: str, node_column_target: str, edge_column: str, edge_reference: str = "_out", performance: bool = False, sorting_column: str = xes_constants.DEFAULT_TIMESTAMP_KEY, timestamp_column: str = xes_constants.DEFAULT_TIMESTAMP_KEY) -> Dict[Tuple[str, str], Dict[str, Any]]
+Performs a network analysis of the log based on the provided parameters. The classical social network analysis methods are based on the order of the events inside a case. For example, the Handover of Work metric considers the directly-follows relationships between resources during the work of a case. An edge is added between the two resources if such relationships occurs. Real-life scenarios may be more complicated. At first, is difficult to collect events inside the same case without having convergence/divergence issues (see first section of the OCEL part). At second, the type of relationship may also be important. Consider for example the relationship between two resources: this may be more efficient if the activity that is executed is liked by the resources, rather than disgusted. The network analysis that we introduce here generalizes some existing social network analysis metrics, becoming independent from the choice of a case notion and permitting to build a multi-graph instead of a simple graph. With this, we assume events to be linked by signals. An event emits a signal (that is contained as one attribute of the event) that is assumed to be received by other events (also, this is an attribute of these events) that follow the first event in the log. So, we assume there is an OUT attribute (of the event) that is identical to the IN attribute (of the other events). When we collect this information, we can build the network analysis graph: The source node of the relation is given by an aggregation over a node_column_source attribute; The target node of the relation is given by an aggregation over a node_column_target attribute; The type of edge is given by an aggregation over an edge_column attribute; The network analysis graph can either be annotated with frequency or performance information; The output is a multigraph. Two events EV1 and EV2 of the log are merged (indipendently from the case notion) based on having EV1.OUT_COLUMN = EV2.IN_COLUMN. Then, an aggregation is applied on the couple of events (NODE_COLUMN) to obtain the nodes that are connected. The edges between these nodes are aggregated based on some property of the *source* event (EDGE_COLUMN).
+
+pm4py.view_petri_net(petri_net: PetriNet, initial_marking: Optional[Marking] = None, final_marking: Optional[Marking] = None, format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white", decorations: Dict[Any, Any] = None, debug: bool = False, rankdir: str = constants.DEFAULT_RANKDIR_GVIZ)
+pm4py.save_vis_petri_net(petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, file_path: str, bgcolor: str = "white", decorations: Dict[Any, Any] = None, debug: bool = False, rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, **kwargs)
+Views or saves an accepting Petri net
+
+pm4py.view_dfg(dfg: dict, start_activities: dict, end_activities: dict, format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white", max_num_edges: int = sys.maxsize, rankdir: str = constants.DEFAULT_RANKDIR_GVIZ)
+pm4py.save_vis_dfg(dfg: dict, start_activities: dict, end_activities: dict, file_path: str, bgcolor: str = "white", max_num_edges: int = sys.maxsize, rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, **kwargs)
+Views or saves a DFG visualization to a file
+
+pm4py.view_performance_dfg(dfg: dict, start_activities: dict, end_activities: dict, format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, aggregation_measure="mean", bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, serv_time: Optional[Dict[str, float]] = None)
+pm4py.save_vis_performance_dfg(dfg: dict, start_activities: dict, end_activities: dict, file_path: str, aggregation_measure="mean", bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, serv_time: Optional[Dict[str, float]] = None, **kwargs)
+Views or saves the visualization of a performance DFG
+
+pm4py.view_process_tree(tree: ProcessTree, format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ)
+pm4py.save_vis_process_tree(tree: ProcessTree, file_path: str, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, **kwargs)
+Views or saves the visualization of a process tree
+
+pm4py.view_bpmn(bpmn_graph: BPMN, format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, variant_str: str = "classic")
+pm4py.save_vis_bpmn(bpmn_graph: BPMN, file_path: str, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, variant_str: str = "classic", **kwargs)
+Views or saves a BPMN graph
+
+pm4py.view_heuristics_net(heu_net: HeuristicsNet, format: str = "png", bgcolor: str = "white")
+pm4py.save_vis_heuristics_net(heu_net: HeuristicsNet, file_path: str, bgcolor: str = "white", **kwargs)
+Views or saves the visualization of an heuristics net
+
+pm4py.view_dotted_chart(log: Union[EventLog, pd.DataFrame], format: str = "png", attributes=None, bgcolor: str = "white", show_legend: bool = True)
+pm4py.save_vis_dotted_chart(log: Union[EventLog, pd.DataFrame], file_path: str, attributes=None, bgcolor: str = "white", show_legend: bool = True, **kwargs)
+Views or saves the visualization of the dotted chart. The dotted chart is a classic visualization of the events inside an event log across different dimensions. Each event of the event log is corresponding to a point. The dimensions are projected on a graph having: X axis: the values of the first dimension are represented there; Y-axis: the values of the second dimension are represented there; Color: the values of the third dimension are represented as different colors for the points of the dotted chart. The values can be either string, numeric or date values, and are managed accordingly by the dotted chart. The dotted chart can be built on different attributes. A convenient choice for the dotted chart is to visualize the distribution of cases and events over the time, with the following choices: X-axis: the timestamp of the event; Y-axis: the index of the case inside the event log; Color: the activity of the event. The aforementioned choice permits to identify visually patterns such as: Batches; Variations in the case arrival rate; Variations in the case finishing rate.
+
+pm4py.view_sna(sna_metric: SNA, variant_str: Optional[str] = None)
+pm4py.save_vis_sna(sna_metric: SNA, file_path: str, variant_str: Optional[str] = None, **kwargs)
+Represents a SNA metric (in a .html file)
+
+pm4py.view_case_duration_graph(log: Union[EventLog, pd.DataFrame], format: str = "png", activity_key="concept:name", timestamp_key="time:timestamp", case_id_key="case:concept:name")
+pm4py.save_vis_case_duration_graph(log: Union[EventLog, pd.DataFrame], file_path: str, activity_key="concept:name", timestamp_key="time:timestamp", case_id_key="case:concept:name", **kwargs)
+Views or saves the case duration graph
+
+pm4py.view_events_per_time_graph(log: Union[EventLog, pd.DataFrame], format: str = "png", activity_key="concept:name", timestamp_key="time:timestamp", case_id_key="case:concept:name")
+pm4py.save_vis_events_per_time_graph(log: Union[EventLog, pd.DataFrame], file_path: str, activity_key="concept:name", timestamp_key="time:timestamp", case_id_key="case:concept:name", **kwargs)
+Views or saves the events per time graph
+
+pm4py.view_performance_spectrum(log: Union[EventLog, pd.DataFrame], activities: List[str], format: str = "png", activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", bgcolor: str = "white")
+pm4py.save_vis_performance_spectrum(log: Union[EventLog, pd.DataFrame], activities: List[str], file_path: str, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", bgcolor: str = "white", **kwargs)
+Views or saves the performance spectrum
+
+pm4py.view_events_distribution_graph(log: Union[EventLog, pd.DataFrame], distr_type: str = "days_week", format="png", activity_key="concept:name", timestamp_key="time:timestamp", case_id_key="case:concept:name")
+pm4py.save_vis_events_distribution_graph(log: Union[EventLog, pd.DataFrame], file_path: str, distr_type: str = "days_week", activity_key="concept:name", timestamp_key="time:timestamp", case_id_key="case:concept:name", **kwargs)
+Views or saves the distribution of the events. Observing the distribution of events over time permits to infer useful information about the work shifts, the working days, and the period of the year that are more or less busy.
+:param distr_type: Type of distribution (default: days_week): - days_month => Gets the distribution of the events among the days of a month (from 1 to 31) - months => Gets the distribution of the events among the months (from 1 to 12) - years => Gets the distribution of the events among the years of the event log - hours => Gets the distribution of the events among the hours of a day (from 0 to 23) - days_week => Gets the distribution of the events among the days of a week (from Monday to Sunday)
+
+pm4py.view_network_analysis(network_analysis: Dict[Tuple[str, str], Dict[str, Any]], variant: str = "frequency", format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, activity_threshold: int = 1, edge_threshold: int = 1, bgcolor: str = "white")
+pm4py.save_vis_network_analysis(network_analysis: Dict[Tuple[str, str], Dict[str, Any]], file_path: str, variant: str = "frequency", activity_threshold: int = 1, edge_threshold: int = 1, bgcolor: str = "white", **kwargs)
+Views or saves the network analysis.
+
+pm4py.view_transition_system(transition_system: TransitionSystem, format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white")
+pm4py.save_vis_transition_system(transition_system: TransitionSystem, file_path: str, bgcolor: str = "white", **kwargs)
+Views or saves a transition system
+
+pm4py.view_prefix_tree(trie: Trie, format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white")
+pm4py.save_vis_prefix_tree(trie: Trie, file_path: str, bgcolor: str = "white", **kwargs)
+Views or saves a prefix tree
+
+pm4py.view_alignments(log: Union[EventLog, pd.DataFrame], aligned_traces: List[Dict[str, Any]], format: str = "png")
+pm4py.save_vis_alignments(log: Union[EventLog, pd.DataFrame], aligned_traces: List[Dict[str, Any]], file_path: str, **kwargs)
+Views or saves the alignment table as a figure
+
+pm4py.view_footprints(footprints: Union[Tuple[Dict[str, Any], Dict[str, Any]], Dict[str, Any]], format: str = "png")
+pm4py.save_vis_footprints(footprints: Union[Tuple[Dict[str, Any], Dict[str, Any]], Dict[str, Any]], file_path: str, **kwargs)
+Views or saves the footprints as a figure
+
+pm4py.view_powl(powl: POWL, format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white", variant_str: str = "basic")
+pm4py.save_vis_powl(powl: POWL, file_path: str, bgcolor: str = "white", rankdir: str = "TB", **kwargs)
+Views or saves a POWL model.
+
+
 
 
 OBJECT-CENTRIC EVENT LOGS
@@ -540,4 +676,35 @@ Filters the objects belonging to the connected components having at least an obj
 
 pm4py.filter_ocel_cc_activity(ocel: OCEL, activity: str) -> OCEL
 Filters the objects belonging to the connected components having at least an event with the provided activity.
+
+pm4py.extract_ocel_features(ocel: OCEL, obj_type: str, enable_object_lifecycle_paths: bool = True, enable_object_work_in_progress: bool = False, object_str_attributes: Optional[Collection[str]] = None, object_num_attributes: Optional[Collection[str]] = None, include_obj_id: bool = False, debug: bool = False) -> pd.DataFrame
+Extracts from an object-centric event log a set of features (returned as dataframe) computed on the OCEL for the objects of a given object type.
+
+pm4py.convert_ocel_to_networkx(ocel: OCEL, variant: str = "ocel_to_nx") -> nx.DiGraph
+Converts an OCEL to a NetworkX DiGraph object.
+
+pm4py.convert_log_to_ocel(log: Union[EventLog, EventStream, pd.DataFrame], activity_column: str = "concept:name", timestamp_column: str = "time:timestamp", object_types: Optional[Collection[str]] = None, obj_separator: str = " AND ", additional_event_attributes: Optional[Collection[str]] = None, additional_object_attributes: Optional[Dict[str, Collection[str]]] = None) -> OCEL
+Converts an event log to an object-centric event log with one or more than one object types.
+
+pm4py.view_ocdfg(ocdfg: Dict[str, Any], annotation: str = "frequency", act_metric: str = "events", edge_metric="event_couples", act_threshold: int = 0, edge_threshold: int = 0, performance_aggregation: str = "mean", format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ)
+pm4py.save_vis_ocdfg(ocdfg: Dict[str, Any], file_path: str, annotation: str = "frequency", act_metric: str = "events", edge_metric="event_couples", act_threshold: int = 0, edge_threshold: int = 0, performance_aggregation: str = "mean", bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, **kwargs)
+Views or saves an OC-DFG (object-centric directly-follows graph) with the provided configuration.
+:param ocdfg: Object-centric directly-follows graph
+:param annotation: The annotation to use for the visualization. Values: - "frequency": frequency annotation - "performance": performance annotation
+:param act_metric: The metric to use for the activities. Available values: - "events" => number of events (default) - "unique_objects" => number of unique objects - "total_objects" => number of total objects
+:param edge_metric: The metric to use for the edges. Available values: - "event_couples" => number of event couples (default) - "unique_objects" => number of unique objects - "total_objects" => number of total objects
+:param act_threshold: The threshold to apply on the activities frequency (default: 0). Only activities having a frequency >= than this are kept in the graph.
+:param edge_threshold: The threshold to apply on the edges frequency (default 0). Only edges having a frequency >= than this are kept in the graph.
+:param performance_aggregation: The aggregation measure to use for the performance: mean, median, min, max, sum
+:param format: The format of the output visualization (if html is provided, GraphvizJS is used to render the visualization in an HTML page)
+:param bgcolor: Background color of the visualization (default: white)
+:param rankdir: sets the direction of the graph ("LR" for left-to-right; "TB" for top-to-bottom)
+
+pm4py.view_ocpn(ocpn: Dict[str, Any], format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ)
+pm4py.save_vis_ocpn(ocpn: Dict[str, Any], file_path: str, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, **kwargs)
+Saves the visualization of the object-centric Petri net into a file
+
+pm4py.view_object_graph(ocel: OCEL, graph: Set[Tuple[str, str]], format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ)
+pm4py.save_vis_object_graph(ocel: OCEL, graph: Set[Tuple[str, str]], file_path: str, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, **kwargs)
+Saves the visualization of an object graph
 
