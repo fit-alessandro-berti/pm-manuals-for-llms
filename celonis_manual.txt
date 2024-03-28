@@ -122,7 +122,7 @@ pql = PQL()
 pql.add(PQLColumn(name="Case Identifier", query="\"Events\".\"CaseID\""))
 pql.add(PQLColumn(name="Activity", query="\"Events\".\"Activity\""))
 pql.add(PQLColumn(name="Timestamp", query="\"Events\".\"Timestamp\""))
-pql.add(PQLFilter(query="FILTER \"Events\".\"Activity\" = 'Confirmation of Receipt'"))
+pql.add(PQLFilter(query="\"Events\".\"Activity\" = 'Confirmation of Receipt'"))
 
 The following comparison operators are available in PQL:
 
@@ -139,4 +139,65 @@ A AND B
 A EQUAL B
 A NOT_EQ_TO   true if A is not equal to B
 
-PQL reduces the inherent complexity for the user to define PQL queries.
+PQL reduces the inherent complexity for the user to define PQL queries, so joins are resolved automatically.
+
+For example, if we want to filter on an attribute at the case level (supposing "Cases" is the case table), the filter would look as follow:
+
+pql.add(PQLFilter(query="\"Cases\".\"Quantity\" >= 500"))
+
+When this filter is added, only the events belonging to the cases for which the quantity (defined for instance in the case table) is greater or equal than 500 are kept in the output.
+
+Grouping operators are also applied automatically. For example:
+
+pql = PQL()
+pql.add(PQLColumn(name="Activity", query="\"Events\".\"Activity\""))
+pql.add(PQLColumn(name="Total Count", query="COUNT(\"Events\".\"Activity\")"))
+
+Provides a table in which each activity is associated with the total number of occurrences in the events table. Another example:
+
+pql = PQL()
+pql.add(PQLColumn(name="Activity", query="DISTINCT \"Events\".\"Activity\""))
+pql.add(PQLColumn(name="Distinct Cases Count", query="COUNT(DISTINCT \"Events\".\"Activity\")"))
+
+Here, the distinct operator is applied first, keeping for each case only a single occurrence of the activity.
+The count command is then applied to this intermediate results, producing the number of distinct cases for which each activity occurs.
+
+The VARIANT operator concatenates all the values for a particular attribute inside a case (process variant). So it returns a single string for each case.
+The following example shows how to know the process variant related to each case:
+
+pql = PQL()
+pql.add(PQLColumn(name="Case Identifier", query="\"Events\".\"CaseID\""))
+pql.add(PQLColumn(name="Process Variant", query="VARIANT(\"Events\".\"Activity\")"))
+
+If we want to know how much frequent is each process variant, the COUNT operator can be then applied:
+
+pql = PQL()
+pql.add(PQLColumn(name="Process Variant", query="VARIANT(\"Events\".\"Activity\")"))
+pql.add(PQLColumn(name="Variant Occurrences", query="COUNT(VARIANT(\"Events\".\"Activity\"))"))
+
+
+The SOURCE and TARGET operators combine values of different rows of the activity table depending on the specified edge configuration.
+
+Possible edge configurations:
+
+* ANY_OCCURRENCE[] TO ANY_OCCURRENCE[]    (directly-follows graph)
+* FIRST_OCCURRENCE[] TO ANY_OCCURRENCE[]   (connects the first event of a case to all the other events of the same case)
+* FIRST_OCCURRENCE[] TO ANY_OCCURRENCE_WITH_SELF[]  (connects the first event of a case with all the events of the same case, including himself)
+* ANY_OCCURRENCE[] TO LAST_OCCURRENCE[]    (connects all the events of a case except the last, to the last event of the case)
+* FIRST_OCCURRENCE[] TO LAST_OCCURRENCE[]    (connects the first event of a case to the last event of a case)
+
+For each PQL object, if the SOURCE/TARGET operators are used, only one edge configuration is possible (not more than one).
+
+Let's see an example related to the computation of the performance directly-follows graph.
+We will make usage of the operator SECONDS_BETWEEN which counts the seconds between two date values.
+If we want to compute the difference in timestamps, but keep the reference to the case identifier, we could use the code:
+
+pql = PQL()
+pql.add(PQLColumn(name="Case Identifier", query="\"Events\".\"CaseID\""))
+pql.add(PQLColumn(name="Source Activity", query="SOURCE(\"Events\".\"Activity\", ANY_OCCURRENCE[] TO ANY_OCCURRENCE[])"))
+pql.add(PQLColumn(name="Target Activity", query="TARGET(\"Events\".\"Activity\")"))
+pql.add(PQLColumn(name="Time Between", query="SECONDS_BETWEEN(SOURCE(\"Events\".\"Timestamp\"), TARGET(\"Events\".\"Timestamp\"))"))
+
+
+Both the SOURCE and TARGET operators accept, before the edge configuration, a possible PQL filter (for example, filtering the timestamp) could be applied.
+
