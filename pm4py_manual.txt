@@ -3,7 +3,14 @@ TRADITIONAL EVENT LOGS
 In pm4py, the preferred structure for storing traditional event logs are the Pandas dataframes.
 Dataframes are imported using Pandas and formatted for process mining usage using the
 pm4py.format_dataframe(df: pd.DataFrame, case_id: str = constants.CASE_CONCEPT_NAME, activity_key: str = xes_constants.DEFAULT_NAME_KEY, timestamp_key: str = xes_constants.DEFAULT_TIMESTAMP_KEY, start_timestamp_key: str = xes_constants.DEFAULT_START_TIMESTAMP_KEY, timest_format: Optional[str] = None) -> pd.DataFrame
-method.
+method. The more standard dataframe structure follows:
+ #   Column             Non-Null Count  Dtype
+---  ------             --------------  -----
+ 0   case:concept:name  8577 non-null   string
+ 1   concept:name       8577 non-null   string
+ 2   time:timestamp     8577 non-null   datetime64[ns, UTC]
+ 3   org:resource       8577 non-null   object
+In which "case:concept:name" is the case identifier, "concept:name" is the activity, "time:timestamp" is the timestamp, and "org:resource" is the resource.
 
 Previously, we were using a more complex data structure:
 - An EventLog object (imported from pm4py.objects.log.obj) contains a dictionary of attributes at the log level (log.attributes) and provides an iterator over its traces (for trace in log:)
@@ -12,6 +19,8 @@ Previously, we were using a more complex data structure:
 
 Also, we were offering an EventStream which is simply a list of events (Event).
 Pandas dataframes, event streams and event logs can be converted from/to each other.
+
+pm4py does not offer a method to directly read CSVs. Instead, Pandas (pd.read_csv) must be used.
 
 TRADITIONAL PROCESS MODELS
 
@@ -94,7 +103,7 @@ root.children.append(A)
 root.children.append(seq)
 
 
-POWL MODELS
+POWL (PARTIALLY ORDERED WORKFLOW LANGUAGE) MODELS
 A partially ordered workflow language (POWL) is a partially ordered graph representation of a process, extended with control-flow operators for modeling choice and loop structures. There are four types of POWL models:
 - an activity (identified by its label, i.e., 'M' identifies the activity M). Silent activities with empty labels (tau labels) are also supported.
 - a choice of other POWL models (an exclusive choice between the sub-models A and B is identified by X ( A, B ) )
@@ -515,7 +524,146 @@ pm4py.view_powl(powl: POWL, format: str = constants.DEFAULT_FORMAT_GVIZ_VIEW, bg
 pm4py.save_vis_powl(powl: POWL, file_path: str, bgcolor: str = "white", rankdir: str = "TB", **kwargs)
 Views or saves a POWL model.
 
+pm4py.compute_emd(language1: Dict[List[str], float], language2: Dict[List[str], float]) -> float
+Computes the earth mover distance between two stochastic languages (for example, the first extracted from the log, and the second extracted from the process model.
+Example:
+        import pm4py
 
+        log = pm4py.read_xes('tests/input_data/running-example.xes')
+        language_log = pm4py.get_stochastic_language(log)
+        print(language_log)
+        net, im, fm = pm4py.read_pnml('tests/input_data/running-example.pnml')
+        language_model = pm4py.get_stochastic_language(net, im, fm)
+        print(language_model)
+        emd_distance = pm4py.compute_emd(language_log, language_model)
+        print(emd_distance)
+
+pm4py.check_soundness(petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, print_diagnostics: bool = False) -> Tuple[bool, Dict[str, Any]]
+Check if a given Petri net is a sound WF-net. In the returned object, the first element is a boolean indicating if the Petri net is a sound workflow net. The second element is a set of diagnostics collected while running WOFLAN (expressed as a dictionary associating the keys [name of the diagnostics] with the corresponding diagnostics).
+
+pm4py.cluster_log(log: Union[EventLog, EventStream, pd.DataFrame], sklearn_clusterer=None, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Generator[EventLog, None, None]
+Apply clustering to the provided event log (method based on the extraction of profiles for the traces of the event log) based on a Scikit-Learn clusterer (default: K-means with two clusters)
+
+pm4py.insert_artificial_start_end(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", artificial_start=constants.DEFAULT_ARTIFICIAL_START_ACTIVITY, artificial_end=constants.DEFAULT_ARTIFICIAL_END_ACTIVITY) -> Union[EventLog, pd.DataFrame]
+Inserts the artificial start/end activities in an event log / Pandas dataframe
+
+pm4py.insert_case_service_waiting_time(log: Union[EventLog, pd.DataFrame], service_time_column: str = "@@service_time", sojourn_time_column: str = "@@sojourn_time", waiting_time_column: str = "@@waiting_time", activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", start_timestamp_key: str = "time:timestamp") -> pd.DataFrame
+Inserts the service/waiting/sojourn times of the case in the dataframe.
+
+pm4py.insert_case_arrival_finish_rate(log: Union[EventLog, pd.DataFrame], arrival_rate_column="@@arrival_rate", finish_rate_column="@@finish_rate", activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", start_timestamp_key: str = "time:timestamp") -> pd.DataFrame
+Inserts the arrival/finish rates of the case in the dataframe. The arrival rate is computed as the difference between the start time of the case and the start time of the previous case to start. The finish rate is computed as the difference between the end time of the case and the end time of the next case to end.
+
+pm4py.check_is_workflow_net(net: PetriNet) -> bool
+Checks if the input Petri net satisfies the WF-net conditions: 1. unique source place; 2. unique sink place; 3. every node is on a path from the source to the sink
+
+pm4py.maximal_decomposition(net: PetriNet, im: Marking, fm: Marking) -> List[Tuple[PetriNet, Marking, Marking]]
+Calculate the maximal decomposition of an accepting Petri net.
+
+pm4py.simplicity_petri_net(net: PetriNet, im: Marking, fm: Marking, variant: Optional[str] = "arc_degree") -> float
+Computes the simplicity metric for a given Petri net model.
+The three available approaches are: Arc degree simplicity: described in the paper     Vázquez-Barreiros, Borja, Manuel Mucientes, and Manuel Lama. "ProDiGen: Mining complete, precise and minimal structure process models with a genetic algorithm." Information Sciences 294 (2015): 315-333; Extended cardoso metric: described in the paper      "Complexity Metrics for Workflow Nets" Lassen, Kristian Bisgaard, and Wil MP van der Aalst; Extended cyclomatic metric: described in the paper       "Complexity Metrics for Workflow Nets" Lassen, Kristian Bisgaard, and Wil MP van der Aalst;
+
+pm4py.get_enabled_transitions(net: PetriNet, marking: Marking) -> Set[PetriNet.Transition]
+Gets the transitions enabled in a given marking
+
+pm4py.get_start_activities(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, int]
+Returns the start activities from a log object
+
+pm4py.get_end_activities(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, int]
+Returns the end activities of a log
+
+pm4py.get_event_attributes(log: Union[EventLog, pd.DataFrame]) -> List[str]
+Returns the attributes at the event level of the log
+
+pm4py.get_trace_attributes(log: Union[EventLog, pd.DataFrame]) -> List[str]
+Gets the attributes at the trace level of a log object
+
+pm4py.get_event_attribute_values(log: Union[EventLog, pd.DataFrame], attribute: str, count_once_per_case=False, case_id_key: str = "case:concept:name") -> Dict[str, int]
+Returns the values for a specified (event) attribute
+
+pm4py.get_trace_attribute_values(log: Union[EventLog, pd.DataFrame], attribute: str, case_id_key: str = "case:concept:name") -> Dict[str, int]
+Returns the values for a specified trace attribute
+
+pm4py.get_variants(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", max_repetitions: int = sys.maxsize) -> Union[Dict[Tuple[str], List[Trace]], Dict[Tuple[str], int]]
+Gets the variants from the log
+
+pm4py.get_stochastic_language(*args, **kwargs) -> Dict[List[str], float]
+Gets the stochastic language from the provided object
+
+pm4py.get_minimum_self_distances(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, int]
+This algorithm computes the minimum self-distance for each activity observed in an event log. The self distance of a in <a> is infinity, of a in <a,a> is 0, in <a,b,a> is 1, etc. The minimum self distance is the minimal observed self distance value in the event log.
+
+pm4py.get_minimum_self_distance_witnesses(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, Set[str]]
+This function derives the minimum self distance witnesses. The self distance of a in <a> is infinity, of a in <a,a> is 0, in <a,b,a> is 1, etc. The minimum self distance is the minimal observed self distance value in the event log. A 'witness' is an activity that witnesses the minimum self distance. For example, if the minimum self distance of activity a in some log L is 2, then, if trace <a,b,c,a> is in log L, b and c are a witness of a.
+
+pm4py.get_case_arrival_average(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> float
+Gets the average difference between the start times of two consecutive cases.
+
+pm4py.get_rework_cases_per_activity(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, int]
+Find out for which activities of the log the rework (more than one occurrence in the trace for the activity) occurs. The output is a dictionary associating to each of the aforementioned activities the number of cases for which the rework occurred.
+
+pm4py.get_cycle_time(log: Union[EventLog, pd.DataFrame], activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> float
+Calculates the cycle time of the event log.
+
+pm4py.get_service_time(log: Union[EventLog, pd.DataFrame], aggregation_measure: str = "mean", activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", start_timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, float]
+Gets the activities' (average/median/...) service time in the provided event log
+
+pm4py.get_all_case_durations(log: Union[EventLog, pd.DataFrame], business_hours: bool = False, business_hour_slots=constants.DEFAULT_BUSINESS_HOUR_SLOTS, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> List[float]
+Gets the durations of the cases in the event log.
+
+pm4py.get_case_duration(log: Union[EventLog, pd.DataFrame], case_id: str, business_hours: bool = False, business_hour_slots=constants.DEFAULT_BUSINESS_HOUR_SLOTS, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: Optional[str] = None) -> float
+Gets the duration of a specific case.
+
+pm4py.get_frequent_trace_segments(log: Union[EventLog, pd.DataFrame], min_occ: int, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Counter
+Get the traces (segments of activities) from an event log object using PrefixSpan. Each trace is preceded and followed by "...", reminding that the trace/segment can be preceded and followed by any other set of activities.
+
+pm4py.get_activity_position_summary(log: Union[EventLog, pd.DataFrame], activity: str, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[int, int]
+Given an event log, returns a dictionary which summarize the positions of the activities in the different cases of the event log. E.g., if an activity happens 1000 times in the position 1 (the second event of a case), and 500 times in the position 2 (the third event of a case), then the returned dictionary would be: {1: 1000, 2: 500}
+
+pm4py.connectors.extract_log_outlook_mails() -> pd.DataFrame
+Extracts the history of the conversations from the local instance of Microsoft Outlook running on the current computer.
+CASE ID (case:concept:name) => identifier of the conversation
+ACTIVITY (concept:name) => activity that is performed in the current item (send e-mail, receive e-mail, refuse meeting ...)
+TIMESTAMP (time:timestamp) => timestamp of creation of the item in Outlook
+RESOURCE (org:resource) => sender of the current item
+
+pm4py.connectors.extract_log_outlook_calendar(email_user: Optional[str] = None, calendar_id: int = 9) -> pd.DataFrame
+Extracts the history of the calendar events (creation, update, start, end) in a Pandas dataframe from the local Outlook instance running on the current computer.
+CASE ID (case:concept:name) => identifier of the meeting
+ACTIVITY (concept:name) => one between: Meeting Created, Last Change of Meeting, Meeting Started, Meeting Completed
+TIMESTAMP (time:timestamp) => the timestamp of the event
+case:subject => the subject of the meeting
+
+pm4py.connectors.extract_log_windows_events() -> pd.DataFrame
+Extract a process mining dataframe from all the events recorded in the Windows registry.
+CASE ID (case:concept:name) => name of the computer emitting the events.
+ACTIVITY (concept:name)  => concatenation of the source name of the event and the event identifier (see https://learn.microsoft.com/en-us/previous-versions/windows/desktop/eventlogprov/win32-ntlogevent)
+TIMESTAMP (time:timestamp) => timestamp of generation of the event
+RESOURCE (org:resource) => username involved in the event
+
+pm4py.connectors.extract_log_chrome_history(history_db_path: Optional[str] = None) -> pd.DataFrame
+Extracts a dataframe containing the navigation history of Google Chrome. Please keep Google Chrome history closed when extracting.
+CASE ID (case:concept:name) => an identifier of the profile that has been extracted
+ACTIVITY (concept:name) => the complete path of the website, minus the GET arguments
+TIMESTAMP (time:timestamp) => the timestamp of visit
+:param history_db_path: path to the history DB path of Google Chrome (default: position of the Windows folder)
+
+pm4py.connectors.extract_log_firefox_history(history_db_path: Optional[str] = None) -> pd.DataFrame
+Extracts a dataframe containing the navigation history of Mozilla Firefox. Please keep Google Chrome history closed when extracting.
+CASE ID (case:concept:name) => an identifier of the profile that has been extracted
+ACTIVITY (concept:name) => the complete path of the website, minus the GET arguments
+TIMESTAMP (time:timestamp) => the timestamp of visit
+:param history_db_path: path to the history DB path of Mozilla Firefox (default: position of the Windows folder)
+
+pm4py.connectors.extract_log_github(owner: str = "pm4py", repo: str = "pm4py-core", auth_token: Optional[str] = None) -> pd.DataFrame
+Extracts a dataframe containing the history of the issues of a Github repository. According to the API limit rate of public/registered users, only a part of the events can be returned.
+:param owner: owner of the repository (e.g., pm4py)
+:param repo: name of the repository (e.g., pm4py-core)
+:param auth_token: authorization token
+
+pm4py.connectors.extract_log_camunda_workflow(connection_string: str) -> pd.DataFrame
+Extracts a dataframe from the Camunda workflow system. Aside from the traditional columns, the processID of the process in Camunda is returned.
+:param connection_string: ODBC connection string to the Camunda database
 
 
 OBJECT-CENTRIC EVENT LOGS
@@ -708,3 +856,67 @@ pm4py.view_object_graph(ocel: OCEL, graph: Set[Tuple[str, str]], format: str = c
 pm4py.save_vis_object_graph(ocel: OCEL, graph: Set[Tuple[str, str]], file_path: str, bgcolor: str = "white", rankdir: str = constants.DEFAULT_RANKDIR_GVIZ, **kwargs)
 Saves the visualization of an object graph
 
+pm4py.connectors.extract_ocel_outlook_mails() -> OCEL
+Extracts the history of the conversations from the local instance of Microsoft Outlook running on the current computer as an object-centric event log.
+ACTIVITY (ocel:activity) => activity that is performed in the current item (send e-mail, receive e-mail, refuse meeting ...)
+TIMESTAMP (ocel:timestamp) => timestamp of creation of the item in Outlook
+Object types:
+- org:resource => the sender of the mail
+- recipients => the list of recipients of the mail
+- topic => the topic of the discussion
+
+pm4py.connectors.extract_ocel_outlook_calendar(email_user: Optional[str] = None, calendar_id: int = 9) -> OCEL
+Extracts the history of the calendar events (creation, update, start, end) as an object-centric event log from the local Outlook instance running on the current computer.
+ACTIVITY (ocel:activity) => one between: Meeting Created, Last Change of Meeting, Meeting Started, Meeting Completed
+TIMESTAMP (ocel:timestamp) => the timestamp of the event
+Object types:
+- case:concept:name => identifier of the meeting
+- case:subject => the subject of the meeting
+
+pm4py.connectors.extract_ocel_windows_events() -> OCEL
+Extract a process mining dataframe from all the events recorded in the Windows registry as an object-centric event log.
+ACTIVITY (concept:name)  => concatenation of the source name of the event and the event identifier
+			(see https://learn.microsoft.com/en-us/previous-versions/windows/desktop/eventlogprov/win32-ntlogevent)
+TIMESTAMP (time:timestamp) => timestamp of generation of the event
+Object types:
+- categoryString: translation of the subcategory. The translation is source-specific.
+- computerName: name of the computer that generated this event.
+- eventIdentifier: identifier of the event. This is specific to the source that generated the event log entry.
+- eventType: 1=Error; 2=Warning; 3=Information; 4=Security Audit Success;5=Security Audit Failure;
+- sourceName: name of the source (application, service, driver, or subsystem) that generated the entry.
+- user: user name of the logged-on user when the event occurred. If the user name cannot be determined, this will be NULL.
+
+pm4py.connectors.extract_ocel_chrome_history(history_db_path: Optional[str] = None) -> OCEL
+Extracts an object-centric event log containing the navigation history of Google Chrome.
+Please keep Google Chrome history closed when extracting.
+ACTIVITY (ocel:activity) => the complete path of the website, minus the GET arguments
+TIMESTAMP (ocel:timestamp) => the timestamp of visit
+Object Types:
+- case:concept:name : the profile of Chrome that is used to visit the site
+- complete_url: the complete URL of the website
+- url_wo_parameters: complete URL minus the part after ?
+- domain: the domain of the website that is visited
+
+pm4py.connectors.extract_ocel_firefox_history(history_db_path: Optional[str] = None) -> OCEL
+Extracts an object-centric event log containing the navigation history of Mozilla Firefox. Please keep Mozilla Firefox history closed when extracting.
+ACTIVITY (ocel:activity) => the complete path of the website, minus the GET arguments
+TIMESTAMP (ocel:timestamp) => the timestamp of visit
+Object Types:
+- case:concept:name : the profile of Firefox that is used to visit the site
+- complete_url: the complete URL of the website
+- url_wo_parameters: complete URL minus the part after ?
+- domain: the domain of the website that is visited
+
+pm4py.connectors.extract_ocel_github(owner: str = "pm4py", repo: str = "pm4py-core", auth_token: Optional[str] = None) -> OCEL
+Extracts a dataframe containing the history of the issues of a Github repository.
+According to the API limit rate of public/registered users, only a part of the events
+can be returned.
+ACTIVITY (ocel:activity) => the event (created, commented, closed, subscribed ...)
+TIMESTAMP (ocel:timestamp) => the timestamp of execution of the event
+Object types:
+- case:concept:name => the URL of the events related to the issue
+- org:resource => the involved resource
+- case:repo => the repository in which the issue is created
+
+pm4py.connectors.extract_ocel_camunda_workflow(connection_string: str) -> OCEL
+Extracts an object-centric event log from the Camunda workflow system.
