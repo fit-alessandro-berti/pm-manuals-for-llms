@@ -175,6 +175,21 @@ pql = PQL()
 pql.add(PQLColumn(name="Process Variant", query="VARIANT(\"Events\".\"Activity\")"))
 pql.add(PQLColumn(name="Variant Occurrences", query="COUNT(VARIANT(\"Events\".\"Activity\"))"))
 
+Other aggregation operators:
+
+AVG(\"Table\".\"Column\")    computes the mean
+FIRST(\"Table\".\"Column\")  gets the first element
+LAST(\"Table\".\"Column\")   gets the last element
+MAX(\"Table\".\"Column\")    gets the maximum value
+MEDIAN(\"Table\".\"Column\")  gets the median value
+MIN(\"Table\".\"Column\")    gets the minimum value
+MODE(\"Table\".\"Column\")   gets the most frequent value
+PRODUCT(\"Table\".\"Column\")  multiplies all the values
+QUANTILE(\"Table\".\"Column\", quantile)   gets a quantile
+STDEV(\"Table\".\"Column\")  computes the standard deviation
+STRING_AGG(\"Table\".\"Column\", delimiter)   aggregates the strings with the provided delimiter (but is slower than the VARIANT operator)
+SUM(\"Table\".\"Column\")     computes the sum of the values of a column
+
 
 The SOURCE and TARGET operators combine values of different rows of the activity table depending on the specified edge configuration.
 
@@ -200,4 +215,33 @@ pql.add(PQLColumn(name="Time Between", query="SECONDS_BETWEEN(SOURCE(\"Events\".
 
 
 Both the SOURCE and TARGET operators accept, before the edge configuration, a possible PQL filter (for example, filtering the timestamp) could be applied.
+
+PQL also provides pull-up functions which aggregate columns based on other tables.
+A typical example is querying the case table, while aggregating on the activity table.
+The available operators follow:
+
+PU_AVG(\"Case Table\", \"Activity Table\".\"Column\")    computes the mean
+PU_FIRST(\"Case Table\", \"Activity Table\".\"Column\")  gets the first element
+PU_LAST(\"Case Table\", \"Activity Table\".\"Column\")   gets the last element
+PU_MAX(\"Case Table\", \"Activity Table\".\"Column\")    gets the maximum value
+PU_MEDIAN(\"Case Table\", \"Activity Table\".\"Column\")  gets the median value
+PU_MIN(\"Case Table\", \"Activity Table\".\"Column\")    gets the minimum value
+PU_MODE(\"Case Table\", \"Activity Table\".\"Column\")   gets the most frequent value
+PU_PRODUCT(\"Case Table\", \"Activity Table\".\"Column\")  multiplies all the values
+PU_QUANTILE(\"Case Table\", \"Activity Table\".\"Column\", quantile)   gets a quantile
+PU_STDEV(\"Case Table\", \"Activity Table\".\"Column\")  computes the standard deviation
+PU_STRING_AGG(\"Case Table\", \"Activity Table\".\"Column\", delimiter)   aggregates the strings with the provided delimiter (but is slower than the VARIANT operator)
+PU_SUM(\"Case Table\", \"Activity Table\".\"Column\")     computes the sum of the values of a column
+
+For example, if you want to associate each case with the corresponding start activities, the following code can be used:
+
+pql = PQL()
+pql.add(PQLColumn(name="Case Identifier", query="\"Cases\".\"CaseID\""))
+pql.add(PQLColumn(name="Start Activity", query="PU_FIRST(\"Cases\", \"Events\".\"Activity\"")))
+
+If you want to associate each start activity with the corresponding number of occurrences in the log (as first activity), the following code can be used:
+
+pql = PQL()
+pql.add(PQLColumn(name="Start Activity", query="PU_FIRST(\"Cases\", \"Events\".\"Activity\"")))
+pql.add(PQLColumn(name="Occurrences", query="COUNT(PU_FIRST(\"Cases\", \"Events\".\"Activity\""))))
 
