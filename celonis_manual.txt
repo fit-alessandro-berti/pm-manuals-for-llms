@@ -82,6 +82,22 @@ data_model.reload()
 
 It is also possible to delete data pools and data models, using the functions   data_pool.delete()   and    data_model.delete()    respectively
 
+To retrieve the different process configurations associated to a data model, the function    data_model.get_process_configurations()    can be used.
+The output is a collection of process configurations. Each process configuration has some properties:
+* activity_table_id:  the identifier of the activity table.
+* case_table_id:      the identifier of the case table (if provided, it may be None).
+* case_id_column:     the case ID column that is used (from the activity and the case tables)
+* activity_column:    the activity column (from the activity table)
+* timestamp_column:   the timestamp column (from the timestamp table)
+
+The first process configuration (in order) is the most important as it is by default used in the Celonis analytics.
+
+Therefore, it is very important to keep track of the correspondence between the tables in the data models and the identifiers.
+The list of tables (containing minimal information) can be retrieved using the function    data_model.get_tables()
+For every table, at least tab.id   and    tab.name   are already retrieved by the get_tables() function.
+Iterating over this list, more attributes over a table can be retrieved using the function    table = data_model.get_table(tab.id)
+This includes the list of columns (table.get_columns()) of the table.
+
 Data models can be queried using the PQL querying language. PQL is a language working on the SAOLA in-memory columnar engine.
 The main goal of PQL is to produce a table as output. Each request can be annotated with some filters, limiting the considered data.
 
@@ -124,6 +140,8 @@ pql.add(PQLColumn(name="Activity", query="\"Events\".\"Activity\""))
 pql.add(PQLColumn(name="Timestamp", query="\"Events\".\"Timestamp\""))
 pql.add(PQLFilter(query="\"Events\".\"Activity\" = 'Confirmation of Receipt'"))
 
+On a note, the filter cannot be applied on top of the resulting column names, but need to take into account queries to the original table(s).
+
 The following comparison operators are available in PQL:
 
 A > B   (greater than)
@@ -136,8 +154,35 @@ A * B    multiplication
 A / B    division
 A OR B
 A AND B
-A EQUAL B
-A NOT_EQ_TO   true if A is not equal to B
+A = B
+A != B   true if A is not equal to B
+
+to verify if a value is null: ISNULL(A) = 1
+to verify if a value is not null:  ISNULL(A) = 0
+
+
+An important operator is CASE_WHEN, which evaluates a set of conditions.
+Examples:
+
+CASE WHEN \"Events\".\"Activity\" = 'Trial' THEN 1 ELSE 0 END
+
+CASE WHEN \"Events\".\"Activity\" = 'Trial' THEN 1 WHEN \"Events\".\"Activity\" = 'Confirm' THEN 2 ELSE 0 END
+
+
+An important operator is REMAP_VALUES, which allows to re-map values of STRING columns.
+For example,
+
+REMAP_VALUES( \"Events\".\"Activity\", ['X', 'TRIAL'], ['Y', NULL], ['Z', NULL])
+
+Changes the activity column in the following way:
+* the activity 'X' is remapped to 'TRIAL'
+* the activity 'Y' is mapped to null, so it disappears
+* the activity 'Z' is mapped to null, so it disappears
+* any other activity is unchanged
+
+With:
+REMAP_VALUES( \"Events\".\"Activity\", ['X', 'TRIAL'], ['Y', NULL], ['Z', NULL], NULL)
+We map any other activity to null, so any other activity disappears.
 
 PQL reduces the inherent complexity for the user to define PQL queries, so joins are resolved automatically.
 
@@ -213,6 +258,13 @@ pql.add(PQLColumn(name="Source Activity", query="SOURCE(\"Events\".\"Activity\",
 pql.add(PQLColumn(name="Target Activity", query="TARGET(\"Events\".\"Activity\")"))
 pql.add(PQLColumn(name="Time Between", query="SECONDS_BETWEEN(SOURCE(\"Events\".\"Timestamp\"), TARGET(\"Events\".\"Timestamp\"))"))
 
+An example filtering on the TARGET operator (keeping only arcs going into the 'X' activity) follows:
+
+pql = PQL()
+pql.add(PQLColumn(name="Case Identifier", query="\"Events\".\"CaseID\""))
+pql.add(PQLColumn(name="Source Activity", query="SOURCE(\"Events\".\"Activity\", ANY_OCCURRENCE[] TO ANY_OCCURRENCE[])"))
+pql.add(PQLColumn(name="Target Activity", query="TARGET(\"Events\".\"Activity\", REMAP(\"Events\".\"Activity\", ['X', 'X'], null))"))
+
 
 Both the SOURCE and TARGET operators accept, before the edge configuration, a possible PQL filter (for example, filtering the timestamp) could be applied.
 
@@ -244,4 +296,7 @@ If you want to associate each start activity with the corresponding number of oc
 pql = PQL()
 pql.add(PQLColumn(name="Start Activity", query="PU_FIRST(\"Cases\", \"Events\".\"Activity\"")))
 pql.add(PQLColumn(name="Occurrences", query="COUNT(PU_FIRST(\"Cases\", \"Events\".\"Activity\""))))
+
+Note that the pull-up aggregation requires two distinct tables to be applied, and cannot be applied on a single table.
+Usually, it is applied on the case table, aggregating on the activity table.
 
