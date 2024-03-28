@@ -249,9 +249,17 @@ Apply the alignments algorithm between a log and a process model. The methods re
 
 pm4py.fitness_token_based_replay(log: Union[EventLog, pd.DataFrame], petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> Dict[str, float]
 Calculates the fitness using token-based replay. The fitness is calculated on a log-based level.
+The output dictionary contains the following keys:
+- average_trace_fitness (between 0.0 and 1.0; computed as average of the trace fitnesses)
+- log_fitness (between 0.0 and 1.0)
+- percentage_of_fitting_traces (the percentage of fit traces (from 0.0 to 100.0)
 
 pm4py.fitness_alignments(log: Union[EventLog, pd.DataFrame], petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, multi_processing: bool = constants.ENABLE_MULTIPROCESSING_DEFAULT, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name", variant_str : Optional[str] = None) -> Dict[str, float]
 Calculates the fitness using alignments.
+The output dictionary contains the following keys:
+- average_trace_fitness (between 0.0 and 1.0; computed as average of the trace fitnesses)
+- log_fitness (between 0.0 and 1.0)
+- percentage_of_fitting_traces (the percentage of fit traces (from 0.0 to 100.0)
 
 pm4py.precision_token_based_replay(log: Union[EventLog, pd.DataFrame], petri_net: PetriNet, initial_marking: Marking, final_marking: Marking, activity_key: str = "concept:name", timestamp_key: str = "time:timestamp", case_id_key: str = "case:concept:name") -> float
 Calculates the precision precision using token-based replay.
