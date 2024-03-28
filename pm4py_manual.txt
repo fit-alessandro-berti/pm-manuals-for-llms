@@ -89,8 +89,11 @@ They have as properties:
 - children (the child ProcessTree objects)
 - operator (one of the pm4py.objects.process_tree.obj.Operator enumeration values: Operator.SEQUENCE, Operator.XOR, Operator.PARALLEL, Operator.LOOP)
 - label (if the ProcessTree is a leaf, then it is valued with the label)
-The properties are mimicked in the constructor. Example construction:
+The properties are mimicked in the constructor.
 
+Note that adding the process trees as children is not enough. Their parent should be explicitly set to the parent node. Otherwise, it does not work.
+
+Example construction:
 from pm4py.objects.process_tree.obj import ProcessTree, Operator
 root = ProcessTree(operator=Operator.PARALLEL)
 A = ProcessTree(label="A", parent=root)
