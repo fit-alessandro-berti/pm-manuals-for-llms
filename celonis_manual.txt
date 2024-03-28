@@ -1,0 +1,142 @@
+Celonis is a leading platform for process mining. The main concepts that you should know about Celonis are:
+- Data Pool: a relational database (in particular, Vertica SQL is used), usually without defining the foreign keys between tables
+- Data Model: an abstraction built on the data pool, in which the foreign keys between tables are defined. A data pool can contain different data models. A data model can contain different process configurations.
+- A process configuration defines an activity table (containing the events and their attributes), expliciting which attributes should be considered as activity, timestamp and case identifier. Optionally, it is also possible to define a case table, containing the case identifier (same attribute name as in the activity table) and the attributes at the case level.
+- The data model should be seen as a snowflake schema. The activity table should be connected to the case table via a foreign key. Additional information about the attributes at the case level (for example, details about a customer or a supplier) can be stored in different tables. The case table should be connected to these tables via a foreign key.
+- Once defined the data model, including the different process configurations, there is a loading of the data model to the SAOLA in-memory columnar database. The entire tables are loaded in-memory.
+- Once loaded, packages (collections of analyses) can be defined on top of a data model. Packages can be grouped in spaces. The access permissions (defining who can read/write the packages) are managed at the space level.
+- It is possible to define additional domain knowledge about a package inside the so-called knowledge models. A package can contain different knowledge models.
+
+The Pycelonis library can be used to connect to the Celonis platform.
+The Pycelonis library can be installed from PIP using the command:
+pip install --extra-index-url=https://pypi.celonis.cloud/ -U pycelonis pycelonis-core
+
+To connect to Celonis, the URL of the instance and an API token (which can be obtained clicking the icon at the bottom left of the Celonis interface, going to "Edit Profile", going to the "API keys" section, putting a name under "New API Key Name" and clicking "Create API Key") are needed.
+A key type needs to be provided between USER_KEY (most common option) or APP_KEY
+
+import pycelonis
+celonis = pycelonis.get_celonis("https://celonis-instance.eu-1.celonis.cloud", api_token="OBTAINED_TOKEN", key_type="USER_KEY")
+
+After connection, the "celonis" object allow to access the "data_integration" (definition of data pool and data models, and operations over them) and "studio" (allowing to define spaces and packages).
+
+The data integration component can be accessed using:
+
+celonis.data_integration
+
+The studio component can be accessed using:
+
+celonis.studio
+
+
+To create a data pool, the following instruction can be used:
+
+data_pool = celonis.data_integration.create_data_pool("name of the data pool")
+
+To retrieve an existing data pool starting from its name, the following instruction can be used:
+
+data_pool = data_pool.data_integration.get_data_pools().find("name of the data pool")
+
+Tables can be pushed to the data pool starting from Pandas dataframes objects. For example, the following instructions can be used to push a table contained in a CSV to a data pool:
+
+import pandas as pd
+
+dataframe = pd.read_csv("name_of_file.csv", sep=",")
+data_pool.create_table(dataframe, "name of the table")
+
+The create_table function accepts a Pandas dataframe and the name of the table. Additional parameters can be provided. For example, if a table with the same name is contained in the data pool and we want to replace that without exceptions, the following instruction can be ued:
+
+data_pool.create_table(dataframe, "name of the table", force=True, drop_if_exists=True)
+
+
+Data models can be managed starting from the data pool object. In particular, to create a data model, the following instruction can be used:
+
+data_model = data_pool.create_data_model("name of the data model")
+
+To retrieve an existing data model, the following instruction can be used:
+
+data_model = data_pool.get_data_models().find("name of the data model")
+
+To add a table from the data pool to the data model, the following instruction can be used:
+
+tab = data_model.add_table("name of the table in the data pool", "alias of the table in the data model")
+
+the alias of the table in the data model is usually set to be identical to the name of the table in the data pool.
+The returned "tab" object is important as it contains the identifier of the table in the data model (tab.id) that is essential to define foreign keys and process configurations.
+Foreign keys between two tables can be defined as follow, assuming that they link on the "fkey" column.
+
+tab1 = data_model.add_table("name of the table 1 in the data pool", "alias of the table 2 in the data model")
+tab2 = data_model.add_table("name of the table 2 in the data pool", "alias of the table 2 in the data model")
+
+data_model.create_foreign_key(tab1.id, tab2.id, columns=[("fkey", "fkey")])
+
+If the foreign key is composed by two columns, then the "columns" argument will consist of two tuples.
+
+
+Eventually, when the tables are inserted and the foreign keys created, a process configuration can be created on the data model using the command:
+
+data_model.create_process_configuration(activity_table_id=tab1.id, case_table_id=tab2.id, case_id_column="Case ID column", activity_column="Activity Column", timestamp_column="Timestamp Column")
+
+The last step is about reloading the data model. This can be done using the command:
+
+data_model.reload()
+
+It is also possible to delete data pools and data models, using the functions   data_pool.delete()   and    data_model.delete()    respectively
+
+Data models can be queried using the PQL querying language. PQL is a language working on the SAOLA in-memory columnar engine.
+The main goal of PQL is to produce a table as output. Each request can be annotated with some filters, limiting the considered data.
+
+The needed imports are:
+
+from pycelonis.pql.pql import PQL, PQLColumn, PQLFilter
+
+
+A PQL object needs to be defined:
+
+pql = PQL()
+
+
+As many PQLColumn objects as many columns are desidered in the output table need to be defined and added to the "pql" object. Each column has its own PQL query.
+
+pql.add(PQLColumn(name="unique name of the column in the output table", query="PQL query 1"))
+pql.add(PQLColumn(name="unique name of the column in the output table", query="PQL query 2"))
+
+
+The filters can be added as PQLFilter objects
+
+pql.add(PQLFilter(query='PQL query 3'))
+pql.add(PQLFilter(query='PQL query 4'))
+
+A simple example, retrieving the case identifier, activity and timestamp colum from the activity table called "Events" is provided:
+
+pql = PQL()
+pql.add(PQLColumn(name="Case Identifier", query="\"Events\".\"CaseID\""))
+pql.add(PQLColumn(name="Activity", query="\"Events\".\"Activity\""))
+pql.add(PQLColumn(name="Timestamp", query="\"Events\".\"Timestamp\""))
+
+
+The output will have as many rows as the events table.
+
+To apply a filter on the rows having "Confirmation of Receipt" as activity, and keep the same columns, a PQLFilter can be added, for example:
+
+pql = PQL()
+pql.add(PQLColumn(name="Case Identifier", query="\"Events\".\"CaseID\""))
+pql.add(PQLColumn(name="Activity", query="\"Events\".\"Activity\""))
+pql.add(PQLColumn(name="Timestamp", query="\"Events\".\"Timestamp\""))
+pql.add(PQLFilter(query="FILTER \"Events\".\"Activity\" = 'Confirmation of Receipt'"))
+
+The following comparison operators are available in PQL:
+
+A > B   (greater than)
+A >= B  (greater or equal than)
+A < B   (lower than)
+A <= B   (lower or equal than)
+A + B    sum
+A - B    difference
+A * B    multiplication
+A / B    division
+A OR B
+A AND B
+A EQUAL B
+A NOT_EQ_TO   true if A is not equal to B
+
+PQL reduces the inherent complexity for the user to define PQL queries.
