@@ -1,0 +1,14 @@
+﻿Declarative Conformance Checking in Celonis
+Conformance Checking is a set of techniques belonging to the Process Mining discipline to compare the behavior of an event log against a de-jure or automatically discovered model to identify anomalies and propose optimizations for the process.
+Celonis provides a rapid-growing software platform for process mining, enabling complex analyses on huge datasets. With the purpose of finding further development scope for conformance checking on big datasets, the following assignment is proposed.
+Declarative conformance checking is an alternative to procedural constraints with regards to the expression of rules that should be followed inside the process instances. Many approaches have been proposed in the literature. In particular, the RUM software for declarative process mining https://rulemining.org/ has been proposed as user-friendly software implementing some of the approaches.
+The goal of the project is to implement a subset of functionalities of the RUM software. The back-end computations should be done in the PQL language. Moreover, a web interface should be provided for the visualization of the discovered process models and the conformance checking insights.
+References:
+* https://www.sciencedirect.com/science/article/abs/pii/S0306437916306615?via%3Dihub 
+* https://dl.acm.org/doi/10.1145/2629447 
+* https://www.sciencedirect.com/science/article/abs/pii/S0957417416304390?via%3Dihub 
+* https://link.springer.com/chapter/10.1007%2F978-3-642-32885-5_6 
+* http://ceur-ws.org/Vol-2196/BPM_2018_paper_23.pdf 
+* https://doi.org/10.1007/978-3-319-24626-0_2 
+* https://link.springer.com/chapter/10.1007%2F978-3-642-23059-2_13 
+

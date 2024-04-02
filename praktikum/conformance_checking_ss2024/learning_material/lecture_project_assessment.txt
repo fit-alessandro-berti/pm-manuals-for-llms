@@ -1,0 +1,432 @@
+Testing & Assessment
+For the final document
+Quality of the results
+
+
+
+• Performance against competing approaches.
+
+• Scalability: how the approach/implementation scales with the:
+   Increase of the number of activities in log/model.
+   Increase of the other features of the log.
+   Increase of the other features of the model.
+
+• Quality: how the approach + implementation compares with the other competing
+  approaches+implementations:
+   Under which conditions the approach works better?
+   Under which conditions the approach works worse?
+
+
+
+
+                                                                                 2
+Identification of the competing approaches+implementations
+
+
+
+• For the final document, state clearly which are the approaches+implementations
+  that you are competing against:
+   Paper
+   Implementation (including the specific version, e.g. ProM 6.10.4 or PM4Py 1.2.12)
+
+
+
+
+                                                                                        3
+Identification of a good test set of logs
+
+
+
+• The logs on top of which you aim to evaluate your approach shall be clearly stated
+  in the final document.
+
+• A repository of artificial and real-life event logs is found at:
+  https://data.4tu.nl/search?q=real-life+event+logs
+  https://data.4tu.nl/search?q=synthetic%20event%20logs
+
+• Real-life: contain more noise (as they are real logs of the execution of a process).
+
+• Synthetic: are generally more regular (follow a process model).
+
+
+
+
+                                                                                         4
+Features that are most important for event logs
+
+“Objective” features
+• Number of events.
+
+• Number of cases of the log.
+
+• Number of variants (unique traces in the log).
+
+• Number of activities.
+
+• Number of resources (SNA).
+
+• Number of attributes that are associated to an event.
+
+
+
+
+                                                          5
+Features that are most important for event logs
+
+Implementation-specific features
+• Loading time.
+
+• Amount of RAM that is needed to store the event log.
+
+• Internal data structure (EventLog where the events are already groped in cases,
+  dataframe).
+
+• Format of the event log (.XES, .CSV, .Parquet).
+
+
+
+
+                                                                                    6
+How to pick a good set of event logs
+
+
+
+• Some small logs:
+   Low number of events / cases / variants
+
+• Some medium-sized logs (receipt phase)
+
+• Some big-sized logs:
+   Road Traffic Fine Management log (500k events, 150k traces)
+
+• Some enormous-sized logs:
+   BPI Challenge 2017 application log (>1.5 M events)
+   BPI Challenge 2018 (2.5 M events)
+   BPI Challenge 2019 (>1M events)
+
+
+
+
+                                                                  7
+Which format you can choose
+
+
+
+• XES:
+    The standard                                                         Row
+    XML based
+    Events are grouped in cases
+    Very few memory-efficient implementations
+• CSV:
+    Most widely used                                                     Row
+    Text
+    Lines are events (not grouped in cases)
+    Parsing needed to get the values
+• Parquet:
+     Columnar format                                                    Column
+     Binary
+     Very efficient, the values of a column are stored together
+     Very few good implementations of Python libraries supporting the
+     standard
+
+
+
+
+                                                                                  8
+Transformation of the event logs
+
+
+
+Goal: from a big logs with a lot of events / behavior, go down to something simpler.
+
+• Sampling
+
+• Filtering:
+   Variants Level (keep only the cases belonging to a specified set of variants)
+   Cases Level (verify properties of the case such as the start activities, the end activities,
+    the duration of a case) cases are not modified
+   Events Level (keep events in a time interval) cases are modified (can disappear)
+
+
+
+
+                                                                                                   9
+Process Model
+
+
+
+• Ideally, you would like to discover a process model that “resembles” the behavior
+  of the event log. Properties:
+   Fitness
+   Precision
+   Generalization
+
+• Different process discovery algorithm:
+   Alpha Miner (not very good)
+   Inductive Miner (sound model with good fitness properties)
+   Heuristics Miner (conversion of heuristics net to Petri net is problematic)
+
+
+
+
+                                                                                      10
+Discovery of a Process Model with Inductive Miner
+
+
+
+• Usually if you provide the entire log:
+   High fitness
+   Low precision (a lot of extra behavior is allowed)
+
+• It makes sense to simplify the log:
+   Application of the variants filter (percentage)
+   Application of the attributes filter (to reduce the number of activities in model)
+   Application of the endpoints filter (to keep only complete traces)
+
+
+
+
+                                                                                         11
+Inductive Miner on Simplified Log
+
+
+
+• Still high fitness if we look at the simplified log.
+
+• But lower fitness (at least in some situations) if we look at the original log.
+
+• Higher precision (less behavior allowed).
+
+• Higher generalization (the transitions in the model are less and used more often).
+
+
+
+
+                                                                                       12
+Different kind of simplification
+
+
+
+• Most frequent trace   Sequential model (can replay the trace)
+
+• 20% of the most common variants (that usually cover the 80% of the execution)
+
+• The remainder 80% is often “outlier behavior”.
+
+• Percentages can vary depending on the log
+
+• Endpoints: trimming out cases that finish earlier-than-expected may favor the
+  properties of your discovered process model
+
+• For each log that you consider, make some of these simplifications.
+
+
+
+
+                                                                                  13
+Manual insertion of anomalies in the log
+
+
+
+• To further vary the behavior contained in the log, some ad-hoc interventions are
+  possible (e.g. adding manually a case).
+
+
+
+
+                                                                                     14
+Always verify the properties of your model
+
+
+
+• Replay fitness: ideally, the log should replay good part of the behavior of the
+  original log.
+
+• Precision: you should aim for the highest precision possible (in order to allow for
+  less extra behavior) or for the lowest precision possible (in order to allow for more
+  extra behavior).
+
+• Generalization: you should aim for the highest generalization possible.
+
+
+
+
+                                                                                          15
+Having a good set of logs and models …
+
+
+
+• The previous methodology helps you to set-up a set of models that have different
+  properties with regards to fitness and precision (as implemented in PM4Py). This
+  is a good base for experiments.
+
+• Helps you to identify “visually” the advantages of your approach in comparison to
+  the others (for example, speed, how the approach reacts in the different settings).
+
+
+
+
+                                                                                        16
+Parameters
+
+
+
+• The work of your implementation may depend on some parameters.
+
+• For example, a couple of parameters.
+
+• In the evaluation, you could look at the effect of these parameters on the quality of
+  the output
+
+
+
+
+                                                                                          17
+“Expert” Evaluation
+
+
+
+• Provide some “debug” information of the:
+
+   Features of the model (for example, printing or representing the footprints to check
+    whether they make sense according to the process model).
+
+   Intermediate steps of the calculation (for example, not just providing the values of the
+    precision and recall, but also printing the anti alignments).
+   Provide evidence that you checked that you what you implemented makes really sense
+    (for example, two similar cases should lead to similar outcomes).
+
+
+
+
+                                                                                               18
+Quality of a Classifier
+
+
+
+• TP  anomalies that are classified as anomalies by the conformance checking
+  system.
+• FP  non-anomalies that are classified as anomalies by the conformance
+  checking system.
+• FN  anomalies that are NOT classified as anomalies by the conformance
+  checking system.
+• TN  non-anomalies that are NOT classified as anomalies by the conformance
+  checking system.
+
+
+
+
+                                                                                19
+“Labeling” of the data
+
+
+
+• Not just using the conformance checking system as-is.
+
+• For some of the logs, you can provide a labeling that tells whether you consider
+  the traces as anomalous or not.
+
+• This helps to measure the quality.
+
+• Difficult on large logs, if you do it do it on small logs.
+
+
+
+
+                                                                                     20
+Testing document
+
+How to represents “numbers” in your Testing Document
+• The “numbers” are the outputs of some automatic tests:
+   Execution times.
+   Values of precision / fitness / anomaly.
+
+• It is OK to represent number in tables. However, tables are often difficult to read.
+
+• It is good to accompany tables with graphs.
+
+• Question:
+   Which graphs could I choose?
+   Which scales to choose on the axis?
+
+
+
+
+                                                                                         21
+Graphs
+
+
+
+
+         22
+Scales
+
+
+
+• Linear: you represent values as they are.
+
+• Logarithmic: you apply the logarithmic function to better represent values (if they
+  grow exponentially).
+
+• Exponential: you apply the exponential function to better represent values (if they
+  grow logarithmically).
+
+
+
+
+                                                                                        23
+Critical evaluation
+
+
+
+• Not only report tables and graphs, but also try to explain how the approach
+  performs depending on:
+   The choice of the parameters.
+   The features of the logs and the models.
+
+• This should be done in text.
+
+• Both the “strong points” and the “criticalities” of the approach shall be clearly
+  stated.
+
+
+
+
+                                                                                      24
+Project Retrospective
+
+
+
+• The final section of your final document for this project shall contain the “project
+  retrospective”.
+
+• What of your project has worked according to the initial requirements and goals.
+
+• What of your project has not worked according to the initial requirements and
+  goals.
+
+• What you have learned working in this project.
+
+• “Extended” phase review.
+
+
+
+
+                                                                                         25
+Deployment
+
+Web services
+• Try to use the project from a machine that is different from yours.
+
+• Often this highlights some problem that you could not catch immediately (for
+  example, your web server is only listening to 127.0.0.1 or you hardcode some
+  paths in the application).
+
+• In any case, the deployment procedure should be stated here (if necessary, repeat
+  the contents of the previously delivered documents).
+
+
+
+
+                                                                                      26
+

@@ -1,0 +1,244 @@
+Requirements Engineering and Functional
+Models
+Requirement Engineering
+
+Context
+• Second document needed for this project.
+
+
+• „Moving targets“ document: can be updated.
+
+• However, doing good work now helps to start the sprints.
+
+• Methodologies for requirements engineering taught in other courses.
+
+• Let‘s try to sync on the expectations.
+
+
+
+
+                                                                        2
+Requirement Engineering
+
+Motivation
+• Topic Document is short and vague (expecially for MSc)
+
+• Still, the most important aspects of your project are described.
+
+• Before starting writing the requirements document, it‘s important that you
+  understand the topic:
+    •   Look at the reference(s)
+    •   Create an idea
+
+• Therefore, the project setup (including the project feasibility study) should be
+  done before starting the requirements engineering.
+
+
+
+
+                                                                                     3
+Requirement Engineering
+
+Requirements Identification
+• What is a requirement?
+    •   <Something that needs to be done ...>
+
+• Identify the requirements of your project (for example, stated in your topic
+  document).
+
+• The final topic document contains some requirements.
+
+
+
+
+                                                                                 4
+Requirement Engineering
+
+Requirements Specification
+• Complements the requirements identification phase.
+
+• Along with the requirements explictly stated in the document, you should come up
+  with some other requirements:
+    •   Implied by the business side (from your point of view).
+    •   Needed for development / deployment of the product.
+
+
+
+
+                                                                                     5
+Requirement Engineering
+
+Classification of the Requirements
+Types of requirements (see Wikipedia):
+    •   Business requirements, Architectural requirements, Structural requirements, Behavioral
+        requirements, Functional requirements, Non-functional requirements, Performance
+        requirements, Design requirements, Derived requirements, Allocated requirements
+
+Importance of the requirement:
+    •   Mandatory
+    •   Desiderata
+    •   Optional
+
+Level - high, medium, low:
+    •   High: The application should provide automatic conformance checking insights.
+    •   Low: The application should be able to provide the insights from the temporal profile
+        with different values of ZETA highlighting the deviation with a gradient color.
+
+
+
+
+                                                                                                 6
+Requirement Engineering
+
+Assignation of a ID to every requirement
+• Example: OFR1  optional functional requirement number 1.
+
+• Easy to uniquely identify a requirement.
+
+• Ideally there should be at least 25 different requirements specified for your
+  project.
+
+
+
+
+                                                                                  7
+Requirement Engineering
+
+Requirements Flowdown
+• Shows the interconection between requirements.
+
+• You can highlight the connection between the high-level requirement and the
+  medium and low level requirements that you are going to define.
+
+• Different ways are possible:
+
+
+                                                 The application should provide automatic
+                                                     conformance checking insights
+
+
+
+
+        The application should be able to provide the insights                The application should be able to provide the insights
+         from the log skeleton with different values of NOISE                 from the temporal profile with different values of ZETA
+            highlighting the deviation with a gradient color.                     highlighting the deviation with a gradient color.
+
+
+
+
+                                                                                                                                        8
+Requirement Engineering
+
+Textual Requirements Flowdown
+• RFH1: The application should provide automatic conformance checking insights.
+
+    •   RFL1: the application should be able to provide the insights from the log skeleton with
+        different values of NOISE highlighting the deviation with a gradient color (RFH1)
+
+    •   RFL2: the application should be able to provide the insights from the temporal profile
+        with different values of ZETA highlighting the deviation with a gradient color (RFH1)
+
+
+
+
+                                                                                                  9
+Requirement Engineering
+
+Connection between RE and product backlog
+• Not so unique.
+
+• N to N relationships: different items of the requirement engineering document can
+  correspond to one item of the product backlog; one item of the requirement
+  engineering document can correspond to different items of the product backlog.
+
+• Requirements can change over time.
+
+
+
+
+                                                                                      10
+Requirement Engineering
+
+Manage the Lifecycle of the Requirements
+Lifecycle:
+  •   Initial definition of the requirement.
+  •   Interconnection between requirements (flowdown).
+  •   Connection to functional diagrams.
+  •   Connection to items of the product backlog.
+  •   Change/Update of the requirement (deletion).
+  •   Status of satisfaction of the requirement.
+
+
+
+
+                                                         11
+Requirement Engineering - Lifecycle
+
+Software
+• There are many good softwares for the management of the requirements.
+
+• Even without installing them, include this in the documents:
+
+    •   A comparison between different requirements management softwares, with pros
+        and cons.
+
+
+
+
+                                                                                      12
+Requirement Engineering - Lab
+
+Feedback
+• You have the possibility to contact us to discuss about your identified
+  requirements.
+
+• This can happen before the requirements flowdown or before the phase of the
+  production of the functional models.
+
+• But it‘s not required, it‘s up to you to decide whether you want feedback before
+  handing in or not.
+
+
+
+
+                                                                                     13
+Functional Models
+
+
+
+Abstracts the functioning of the different components of your application (front-end,
+back-end) and the communication between them, for a specific use case.
+BPMN 2.0 notation:
+  • Components can be different swimlanes.
+  • Communication between components can be done using messages.
+  • Rich notation for the events (e.g., the user inserts a number in an input box, the result is
+    written in the database ...)
+  • Rich semantic for the control flow.
+
+
+
+
+                                                                                                   14
+Functional Models
+
+
+
+
+                    15
+Functional Models - Lab
+
+Goal
+Expectation:
+
+• Production of at least two functional models for different use cases of your
+  application.
+
+But if:
+
+• you cannot identify more than one use case, then one it is
+
+
+
+
+                                                                                 16
+

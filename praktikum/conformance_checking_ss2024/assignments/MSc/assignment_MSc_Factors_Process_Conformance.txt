@@ -1,0 +1,19 @@
+﻿Analysis of Factors influencing Process Conformance
+Conformance Checking is a set of techniques belonging to the Process Mining discipline to analyze the compliance of the executions of a business process.
+Celonis provides a rapid-growing software platform for process mining, enabling complex analyses on huge datasets. With the purpose of finding further development scope for conformance checking on big datasets, the following assignment is proposed.
+Some factors in the process might influence the conformance time. In particular, moments of overload and concept drifts could have a significant impact on the performance. Moreover, cases with different attributes might have different procedural outcomes.
+The goal of the project is to build a matrix of numeric features over the time, in order to assess the influence of factors on the conformance of the process. In particular:
+- Temporal features, such as the number of events, the service and waiting times, and the arrival rate, could be computed on different time intervals of the overall event log.
+- Different metrics can also be considered for concept drift (i.e., locally linear embeddings) and anomaly scores (i.e., the isolation forests or local outlier factor methods can be used).
+- Process conformance, aside from process models, might be measured by KPIs (throughput time, rework, outcome). This could lead to goal-based scores for every case (with more negative values indicating more serious conformance problems).
+- Counterfactual attribute analysis could be used to identify attributes at the case level that lead to suboptimal execution of the process.
+The computations should (mostly) be computed on the Celonis platform by means of the PQL language. Moreover, advanced reports should be provided in order for the analyst to understand the factors influencing conformance.
+References:
+- https://www.vdaalst.rwth-aachen.de/publications/p1133.pdf 
+- https://dl.acm.org/doi/pdf/10.1145/3472752 
+- https://dl.acm.org/doi/pdf/10.1145/3338840.3355641 
+- https://link.springer.com/article/10.1007/s41060-023-00428-2 
+- https://link.springer.com/article/10.1007/s00766-018-00308-3 
+- https://ieeexplore.ieee.org/iel7/8490808/8491107/08491173.pdf 
+- https://link.springer.com/chapter/10.1007/978-3-031-27815-0_15 
+- https://arxiv.org/pdf/2102.13490 

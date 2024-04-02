@@ -1,0 +1,33 @@
+A customizable interface for LTL Checking
+LTL (logical-temporal) conformance checking has been developed to
+provide a way to verify pre-defined rules on event logs (such as the
+four-eyes principle) and retrieve the deviating cases.
+The goal of the group of students is to understand, master, and
+develop LTL checking techniques, designing and implementing an
+innovative interface that permits a modular composition of the rules
+to filter the aimed behavior from the event log.
+In particular, it is required to implement an interface that:
+   Permits to modularly compose the logical-temporal rules and
+    to apply the filtering.
+   Can show the cases of the event logs deviating according to the
+    rules, with the possibility to explore the variants (collection of
+    cases with the same activities in the same order) and the
+    events.
+   Can show the exact point where deviations are happening
+    (=online conformance checking), at least for some of them.
+The students could start from the code base of the PM4Py or the
+PM4JS process mining libraries and develop the interface/stack of
+web services.The outputs of the project are:
+   The code that implements the chosen subset of functionalities.
+   Documentation about the product (including the requirements
+    engineering).
+   Tests (manual, unit)
+Pointers:
+   LTL checking
+    https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.81
+    .4765&rep=rep1&type=pdf
+ Runtime verification
+  https://bia.unibz.it/view/delivery/39UBZ_INST/1223495750000
+  1241/13235007890001241
+ RuM – Rule mining made simple https://rulemining.org/
+

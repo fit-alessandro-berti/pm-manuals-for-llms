@@ -1,0 +1,636 @@
+Project Initiation Document Conformance
+    checking using activity and trace
+                 embeddings
+
+                 Group 5
+
+              December 2020
+
+
+
+
+                    1
+Contents
+1 Introduction                                                                                              3
+
+2 Business Case                                                                                             3
+  2.1 Client                                                           .................................    3
+  2.2 Example 1: Online Shopping Platform . . . . . . . . . . . . . . .                                     3
+  2.3 Example 2: Analyzing Repair Process . . . . . . . . . . . . . . .                                     4
+  2.4 Bene ts . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                               4
+
+3 Feasibility Study                                                                                         5
+  3.1 Theoretical and Technical Feasibility . . . . . . . . . . . . . . . .                                 5
+  3.2 Use Cases . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                               6
+      3.2.1                      Python . . . . . . . . . . . . . . . . . . . . . . . . . . . .             6
+      3.2.2             Conformance Checking . . . . . . . . . . . . . . . . . . . .                        6
+
+4 Project Charter                                                                                           7
+
+5 Tools                                                                                                     9
+  5.1 Trello                                                         .................................      9
+  5.2 GitLab of the RWTH Aachen University . . . . . . . . . . . . . .                                      9
+  5.3 PM4Py . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                 9
+
+6 Team                                                                                                     10
+  6.1 Personal Description . . . . . . . . . . . . . . . . . . . . . . . . .                               10
+      6.1.1                       AAAAAA . . . . . . . . . . . . . . . . . . . . . . . .                   10
+      6.1.2                  BBBBBBB . . . . . . . . . . . . . . . . . . . . . . . . .                     10
+      6.1.3                  CCCCCCCC . . . . . . . . . . . . . . . . . . . . . . .                        10
+      6.1.4               DDDDDDDD . . . . . . . . . . . . . . . . . . . . . . . . .                       11
+      6.1.5                     EEEEEEE . . . . . . . . . . . . . . . . . . . . . . . .                    11
+      6.1.6                     FFFFFFFFF . . . . . . . . . . . . . . . . . . . . . .                      11
+  6.2 Roles .                                                   .................................          12
+
+7 Phase review                                                                                             12
+  7.1 AAAAAAAA . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                     12
+  7.2 BBBBBBBBB . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                  13
+  7.3 CCCCCCCC . . . . . . . . . . . . . . . . . . . . . . . . . . .                                       13
+  7.4 DDDDDDDDDD . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                 13
+  7.5 EEEEEEEEEE . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                   13
+  7.6 FFFFFFFFFFFF . . . . . . . . . . . . . . . . . . . . . . . . . . .                                   14
+
+
+
+
+                                                     2
+1     Introduction
+In this project, we aim to implement software for conformance checking using
+activity and trace embedding for the A1 GmbH, which is a consulting
+company wanting to optimize their service. This initiation document contains
+every detail for initiating this project.
+In chapter 2, the business cases, for which the product will be developed, will
+be presented. The nancial importance of our product for the client will be
+explained and two scenarios where our product can be used to improve the
+service provided by the A1 GmbH will be listed.
+In chapter 3, to discuss the feasibility of our product, the concepts and tools
+that will be used to implement our product will be introduced. Two use cases
+will also be given to show the applicability of our product.
+In chapter 4, a GANTT chart outlining the time frame of our project, and its
+explanation will be provided.
+In chapter 5, tools that will be used in this project and the reason why we
+choose to use these tools will be given.
+In the nal chapter, an overview of our development team will be provided, which
+contains information about our background, academic interests, strengths, and
+weaknesses as well as the roles assigned to each member of our team.
+
+
+2     Business Case
+2.1   Client
+Our client A1 GmbH is a consulting company that o ers business solution prod-
+ucts to its customers based on process mining. Current products utilize the
+PM4Py library for process mining. The products are o ered in forms of services,
+which leads to a high scalability of the product line. A1 GmbH is expecting to
+achieve more diversity in its product family, such that it results in a broad
+customer spectrum. They are expecting to enrich their process mining products
+with strong conformance checking features provided by OURPRODUCT. The
+following paragraphs will provide two exemplary use cases. The examples show
+that the solutions provided by A1 GmbH to its customers can be clearly im-proved
+by applying OURPRODUCT, leading to higher revenue for A1 GmbH.
+
+
+2.2   Example 1: Online Shopping Platform
+B1 GmbH is an online shopping platform with many di erent types of items.
+Improving customer experiences is critical for achieving more sales, which can be
+accomplished by avoiding redundant steps during the order process. B1 GmbH is
+expecting to o er a better customer experience by examining cus-tomer
+behaviors, which start from accessing the shopping platform and end
+
+
+                                       3
+with placing an order or leaving the website. Every action executed by cus-
+tomers will be internally documented. This produces su cient data not only for
+applying OURPRODUCT’s advanced process mining techniques but also for
+applying its robust conformance checking methods. B1 GmbH will be able to
+adjust their platform according to the obtained overview of customer behavior
+using OURPRODUCT. B1 GmbH is planning to purchase the service from A1
+GmbH since it has shown its adaptability and e ectiveness to their business
+cases. Important criteria of B1 GmbH for applying OURPRODUCT are:
+ i. Improvement of customer experience
+ ii. Higher Conversion Rate
+
+2.3   Example 2: Analyzing Repair Process
+C1 GmbH is a mobile device manufacturer with diverse product lines such as
+smartphones, tablet PCs, and Laptops. Besides the quality and the price com-
+petitiveness of the products, C1 GmbH is putting e ort into improving customer
+services during the repair process. This can result in a better reputation for C1
+GmbH, which will result in bene ts while competing with other manufacturers on
+the market. They have been using optimized processes for handling cus-tomers’
+requests, and are expecting to achieve more e ciency. Every step in a repair
+process will be documented due to customer production law. This will result in a
+su cient amount of data, which can be used by OURPRODUCT’s advanced
+process mining and conformance checking approach. With the help of
+OURPRODUCT, C1 GmbH will be able to reduce customer complaints during the
+repair process, by predicting when and why the products can cause defects. The
+important criteria of C1 GmbH for applying OURPRODUCT is:
+
+ i. Avoiding redundant steps during the repair process for better customer
+    experience
+ ii. Finding and solving the weaknesses of the current processes of repair
+     ser-vices
+
+2.4   Bene ts
+OURPRODUCT can be applied by A1 GmbH in various aspects. A1 GmbH
+can o er its existing products to its customers in combination with
+OURPROD-UCT to meet the increasing demand and complexity of data
+analytics in the market. The above two examples also show that the
+application of OURPROD-UCT is not limited to speci c areas of the industry.
+Considering these factors, A1 GmbH will be able to achieve high revenue
+after exceeding the break-even point, which was set initial investment on the
+cost of purchasing and adapting OURPRODUCT to its product line.
+
+
+
+
+                                       4
+3     Feasibility Study
+3.1    Theoretical and Technical Feasibility
+The eld of process mining is divided into two main research areas - discovery
+and conformance checking. Our product will focus on the latter due to the
+availability of a wide range of tools for the former, e.g. alpha miner [5] and its
+improved variants. Given a model, one wants to assess its quality. For this,
+the model is usually compared to real-world process logs. As these models
+and logs are in most cases large, automated approaches are necessary. The
+already proposed methods can be approximately divided into two groups: log
+replay based and trace alignment based [6]. To outperform these existing
+approaches, we want to try a completely new method based on embeddings
+as proposed in the work by Peeperkorn et al. [3]. The usage of a novel
+method immediately raises the question of feasibility. The main concerns are:
+    1. Is the approach fast enough?
+    2. How high is the implementation time?
+    3. Does the novel approach deliver good results?
+
+Performance The performance of an algorithm is a critical factor for the
+practical employment of the method. If the time to completion of an algorithm
+is too high, it might not be feasible to use it in a production setting. The
+approach we want to take has already been investigated for performance [3],
+showing technical feasibility of the processing of large event logs on a
+moderate processor. If higher performance is necessary, this could be
+achieved by faster machines, performance optimizations of the code (e.g.
+using a more native programming language like C/C++ or Rust), or the usage
+of parallelization (e.g. processing multiple parts of the log in parallel).
+
+Implementation To accelerate the implementation of OURPRODUCT we want
+two take a two-fold approach: First, we will utilize the "standing on the shoulders
+of giants"-principle by using existing well-performing libraries and frameworks like
+Python, PM4Py [1] and NumPy [2]. Please also refer to the following subsection
+for further details on these. Second, we can base our ap-proach on the work ow
+outlined in the work of Peeperkorn et al. [3]. For further details regarding our
+schedule please refer to the GANTT chart provided below.
+
+Quality The correct behavior of the approach was already veri ed [3]. Addi-
+tionally, one can swap out individual parts of the approach with di erent algo-
+rithms. Together with the parameter space, this delivers room for
+improvement of the quality if necessary.
+
+
+
+
+                                         5
+3.2     Use Cases
+3.2.1   Python
+Mathematics can be seen as a core discipline present in all kinds of sciences like
+physics, chemistry and, biology as many problems in those elds are solved using
+mathematical tools. Therefore, most scientists have a good grasp of how to
+describe eld-speci c tasks in the universal language of mathematics. Today, in
+the age of computers, a new joint-discipline has arisen: powerful computers can
+be used to tackle complicated tasks that could not be solved before. To do this,
+however, one needs to know a programming language to reformulate a problem
+so that a computer can solve it. For many programming languages, this often
+means that one needs to be able to think like a computer scientist. Because many
+experts have never dealt with any aspect of computer science, this poses a
+problem because, now, two people are needed to perform one task
+- one person with expertise in a given domain and one person with expertise
+in computer science.
+The programming language Python aims to loosen this dependency by using
+formulations that look similar to mathematical expressions and by providing
+libraries for almost any scienti c discipline. Examples, among many more, are
+Astropy for astronomy, Biopython for biology, Matplotlib and Seaborn for any
+kind of data visualization and Numpy for e cient computation of all kinds of
+mathematical calculations.
+Summarizing, the bene ts of using Python in a scienti c environment are:
+   • Simplicity: fast translation of scienti c tasks/ problems into the Python
+     programming language without prior knowledge in computer science.
+   • Availability: huge amount of well-documented, domain-speci c libraries
+     that are often based on scienti c papers.
+   • Versatility: Python can be used for almost anything ranging from pure
+     mathematical calculations to big applications with a graphical user inter-
+     face.
+
+3.2.2   Conformance Checking
+
+The Seoul National University Bundang Hospital (SNUBH) is one of the major
+hospitals in Korea with 1,356 beds and more than 4,500 patients that visit the
+hospital every day. Such numbers make the healthcare processes very
+compli-cated and therefore the hospital would like to see if the processes that
+patients actually follow still match the standard processes of the hospital. This
+gets even more interesting, as the standard model of the hospital dates back
+to a time where there were fewer patients. To nd out if the standard model
+was still up to date, the Ulsan National Institute of Science and Technology
+(UNIST) ap-plied methods from the eld of conformance checking to compare
+the standard model with the actual processes. [4]
+
+
+                                        6
+    1. The event log was extracted from the hospital information system and
+       contained:
+          • About 120,000 cases (treated patients)
+          • About 700,000 events (activities performed for these patients)
+          • 15 di erent tasks
+    2. Together with the medical professionals, the following questions were posed:
+
+          • Does the standard model explain actual patients’ movements in
+            the hospital?
+          • How much of increase in patients is allowed?
+          • Are the process patterns di erent depending on the patient types?
+    3. The results were as follows:
+          • It was found that the actual outpatient care processes were much
+            more complex than depicted in the standard model. However, the
+            medical sta explained this with the fact that the standard model
+            only shows the most important ows. Apart from that, the profes-
+            sionals were not able to nd any undesired deviations in the derived
+            model which means that the processes are well-managed by the
+            hos-pital.
+          • An increase of patients of less than 10% was advised by the data
+            analysts to prevent a big increase in the consultation waiting time
+            for patients
+          • Further analysis found that there were di erences in process
+            patterns between new patients and returning patients and that new
+            patients stayed longer than returning patients. The results of the
+            pattern analysis were used to develop a smart healthcare system
+            in the hos-pital. Patients can now use a smartphone to nd their
+            route that is recommended based on the pattern analysis result.
+The results show that the overall process model of the hospital is still up to
+date, even with the increase of patients. Through the pattern analysis, a
+smart app could be developed to make the patients’ journey through the
+hospital easier and more e cient. Additionally, the medical experts were
+informed that a large increase in patients might result in much higher
+consultation waiting times for the patients. The sta of the hospital were
+impressed by the results and requested further analyses concerning the call
+center and the payment process models.
+
+
+4      Project Charter
+The timeline of our project can be seen in the following GANTT Chart:
+
+
+                                          7
+                                                                                12/20                          1/21                  2/21
+                                                                   2   6
+                                                                           13               20   27   3   10      17   24   31   7     14   21
+
+
+
+
+   Conformance checking usi...                 start      end
+
+    Project Initiation                         03/12/20 11/12/20
+      Workload Distribution                    03/12      04/12
+      Preparing the document                   04/12      08/12
+      Final Discussion                         09/12      09/12
+      Submission of Project Initiation         11/12      11/12
+
+    Requirements Engineering                   11/12/20 23/12/20
+      Workload Distribution                    11/12      12/12
+      Requirements Analysis                    12/12      15/12
+
+      Allocation and Flow-down of Require...   16/12      20/12
+      Final Discussion                         21/12      21/12
+      Submission of Requirements Engineer...   23/12      23/12
+
+    Sprint 1                                   23/12/20 15/01/21
+      Workload distribution and Planning       23/12      23/12
+
+      Coding + Documentation                   23/12      12/01
+
+      Final Discussion                         13/01      13/01
+
+      Submission of Code + Documentation       15/01      15/01
+
+    Sprint 2                                   15/01/21 29/01/21
+
+      Workload distribution and Planning       15/01      15/01
+
+      Coding + Documentation                   15/01      26/01
+
+      Final Discussion                         27/01      27/01
+
+      Submission of Code + Documentation       29/01      29/01
+
+    Sprint 3                                   29/01/21 12/02/21
+
+      Workload distribution and Planning       29/01      29/01
+
+      Coding + Documentation                   29/01      09/02
+
+      Final Discussion                         10/02      10/02
+
+      Submission of Code + Documentation       12/02      12/02
+
+    Testing and Assesment                      12/02/21 26/02/21
+
+      Testing                                  12/02      21/02
+
+      Final Discussion                         22/02      24/02
+
+      Project Submission                       26/02      26/02
+
+
+
+
+Our plan follows a distinct pattern. We always start with a Planning phase, which
+mostly consists of workload distribution and planning of any internal deadlines.
+Then every team member has time to accomplish his tasks until the Final
+Discussion deadline, which is for the most part a couple of days before any given
+milestone. The deadlines are not set with too much time after them, since we
+believe that feedback should not only be given at a strict time but at any time,
+giving the corresponding person enough time to x any mistakes and not waste
+any time on things that may ultimately need to be changed completely. These
+deadlines are nonetheless a few days before the milestones since it is also
+important to gather our feedback and re ect on what we’ve accomplished, whilst
+also having some time for any small changes before the milestone.
+Our sprints are roughly 2 weeks each, with 11 days for development and
+docu-mentation, followed by 3 days for discussions and nal changes.
+The main Milestones and their respective dates of our project are the submis-
+sions of any work product connected to the following:
+   • Project Initiation: 11 December 2020 (23:59:59 CET)
+   • Requirements Engineering: 23 December 2020 (23:59:59 CET)
+   • Sprint 1: 15 January 2021 (23:59:59 CET)
+   • Sprint 2: 29 January 2021 (23:59:59 CET)
+   • Sprint 3: 12 February 2021 (23:59:59 CET)
+   • Testing and Assessment: 26 February 2021 (23:59:59 CET)
+
+
+                                                                                        8
+It is important to note that this is a preliminary planning of our project, which is
+subject to change due to the current COVID-19 pandemic, as well as any
+personal/professional hurdles that may arise during the execution of the project.
+
+
+5     Tools
+5.1    Trello
+We use Trello, which is a web-based platform to assist, organize, and plan
+our project. Every member of our group has access to plenty of useful tools
+that helps with our teamwork and the de nition of tasks. In this platform, we
+can create lists and divide them into smaller tasks, which allows us to assign
+them to our team members. To enhance our project, we mark the most
+important tasks with proper color labels and set deadlines. If someone nishes
+his work, he can check the list and complete the assigned task. Altogether,
+Trello is a user-friendly platform, that plays a signi cant part in our project.
+
+Link to our Trello board: Group 5 Trello
+
+5.2    GitLab of the RWTH Aachen University
+RWTH Aachen is a member university of NFDI4Ing and the students have
+the admission to use DFN AAI Single Sign-On to create projects and groups.
+We use GitLab of the RWTH Aachen University to manage our own Git-
+repository so that each team member has access to our project and to
+increase the quality of the code. Besides, this website has other functions as
+an issue-tracking-system, a wiki, and an option to review codes. The
+advantage of utilizing GitLab is that external users can authenticate via
+GitHub, however, they do not have the access to create groups and projects.
+
+Link to our repository: Group 5 GitLab
+
+5.3    PM4Py
+To implement conformance checking in Python, we use the library, PM4Py,
+which supports every tool for process mining algorithms. It is an open-source
+tool and intended to be used in both academia and industry projects, which is
+developed by the Fraunhofer Institute for Applied Information Technology.
+This library provides a simpli ed interface for conformance checking, which
+has two important techniques: token-based replay and alignments. Therefore,
+PM4Py is fundamental to complete our project.
+
+
+
+
+                                         9
+6       Team
+6.1     Personal Description
+6.1.1    AAAAAAAAA
+
+I am a bachelor computer science student in 5th semester at RWTH Aachen Uni-
+versity, with business administration as a secondary subject. I have experiences
+with solving simple problems using Java, C and Python, and I am currently
+learning iOS application development. I am very interested in applying theories
+from computer science to solve practical problems, and that have led me to
+process mining. My strength lies in applying existing methods and developing
+them furthermore to solve new problems. But since I lack in practical expe-
+riences regarding that capability, I believe that this lab course is an excellent
+opportunity for me. I am expecting to enhance my Python skills and mainly the
+knowledges about process mining through working in a group to solve practical
+issues. Furthermore, I am expecting to study more about this eld in upcoming
+semesters, after earning an initial experience from this course.
+
+6.1.2    BBBBBBBBBBB
+
+I am a Computer Science student in 5th semester at RWTH Aachen
+University with Electronics as my secondary subject. I have basic knowledge
+in C, Python and Java, and tried to solve problems in Embedded Software
+Development, Data Science and Software Engineering. Because of large
+interest in Data Mining, I attend many courses about it in this semester, for
+instance, Machine Learning and Introduction to Data Science, which I think
+maybe helpful for nishing this project. Process Mining is also an important
+theme in Data Science, so I decide to attend this course. In this project I hope
+I can work in a team to complete the given tasks, so that I can learn more
+about Process Mining and improve my programming skills.
+
+6.1.3    CCCCCCCCCCCCC
+I am a Computer Science Bachelor student at RWTH Aachen University with
+Medicine as a secondary subject. So far I’ve dabbled with all sorts of program-
+ming languages such as JS, Java, Haskell, C++, C#, etc. in my programming
+journey. One of the newest additions to my arsenal is Python. I have mainly used
+Python in Coding Challenges, which I enjoy doing as a way to keep my mind
+sharp and adaptive to all sorts of situations, as problem-solving is, in my opinion,
+the most important quality in programming. I’ve also taken the course "Intro to
+scienti c programming with Python", which gave me a brief overview of the
+applications of Python in Data Science. This is the reason I decided to attend this
+Praktikum. Another great aspect of this project is the ability to earn rst-hand
+experience in project management and teamwork. I tend to focus more on the
+practical implementations of algorithms, rather than the theory behind them. That
+said I’ve gained substantial knowledge of various
+
+
+                                        10
+algorithms throughout my studies. I am really looking forward to seeing this
+project through.
+
+6.1.4   DDDDDDDDDDDDDD
+I am studying Computer Science Bachelor at RWTH Aachen University, with
+Business Administration as a secondary subject. I have gained basic knowledge
+in Java, C and Python by attending various of courses in the university and have
+practical experience with program C as working as an academic assistant. After
+participating the course Database and Information System and Business Process
+Intelligence, I started to get interested in Data science and look forward discover
+much more about this eld, which includes Process Mining. Furthermore, I applied
+for this project, to gain knowledge about Process Mining and to improve my
+programming skills in Python. Therefore, it is a great opportunity for me,
+participating in this project, to expand my practical experience. Through this
+course, I expect to work together with our group as a team to accomplish the
+given tasks and successfully complete our project.
+
+6.1.5   EEEEEEEEEEEEE
+I am currently pursuing my Bachelor’s degree in computer science at the RWTH
+Aachen University with psychology as an application subject. I was always
+stunned by the fact that computers seemed to be able to attain human intel-
+ligence and beat them, for example, in games that they, themselves invented.
+This led me to the eld of machine learning and subsequently to the broader eld of
+data science which demysti ed the so-called arti cial intelligence for me.
+Currently, I possess a lot of theoretical knowledge about various machine
+learning and data science algorithms and I now aim to learn more about the
+practical applications of those methods, which is why I chose the subject of pro-
+cess mining. I am looking forward to working together with my team members and
+I hope to be able to contribute to a successful outcome of our project by using my
+theoretical knowledge and my Python programming skills.
+
+6.1.6   FFFFFFFFFFFFFFFF
+
+I started coding in secondary school for my "Jugend forscht" projects. I am
+thus an experienced programmer looking into expanding his theoretical
+knowledge by the study of computer science at the RWTH Aachen University
+aiming for a B. Sc. at the end of next semester. My main interest lies in the
+applications of computer science in other domains to accelerate research and
+innovation. This often includes the application of data science. Process
+mining is an interesting sub- eld of data science showing some very useful
+applications which easily give high bene t to process managers & engineers.
+During the lab, I want to get hands-on experience with process mining after
+taking a theoretical introductory course by Prof. Wil van der Aalst.
+
+
+
+
+                                        11
+6.2   Roles
+Scrum Master: AAAAAA As a scrum master, he is responsible for the
+organizational environments of his team to create a high-value product. He
+must manage the Trello Board and GitLab of the project, assign tasks to each
+member and help the team to approach their work without di culty.
+
+O cial Communication/Product Owner: BBBBBB He is re-sponsible for
+establishing a communication channel between our group and teaching
+assistants. He will be arranging meetings, delivering tasks and requests so
+that the project can achieve its goal in an optimal way.
+
+Tools Administration: CCCCCCCCCC As a tools administrator, he should
+have a good understanding of the tools we might need during the project and
+be able to introduce everyone on the team to them to assure seamless
+integration of the tools in our work ow.
+
+Theory Expert: DDDDDDD As our theory expert, Robin needs to know the
+used algorithms and their theoretical background in detail and he should be
+able to answer any questions that other team members might have
+concerning the underlying scienti c paper.
+
+Software Expert: EEEEEEEEE Working as a software expert, he should be
+the team member who is very familiar with Python, PM4Py and other libraries
+that we will use.
+
+Test Management: FFFFFFFF As the test manager, he is respon-sible for the
+organization and orchestration of tests.
+
+
+7     Phase review
+7.1   AAAAAAAAA
+"I am very satis ed with the overall procedure that our team has taken to nish
+our rst task in this project. Even though everything should have been done
+online due to COVID-19 Pandemic, every team member was responsible and
+nished their assignments. In case of con icts, we tried to listen to each other’s
+preferences and nd the best solution which could satisfy both. Now that every
+team member has found their positions in this project, and they got used to
+cooperation tools like Trello and Slack, I am expecting more e cient teamwork
+in upcoming phases of this project"
+
+
+
+
+                                       12
+7.2   BBBBBBBB
+"This is the rst phase of our project. I was scared that lack of communication
+might cause serious problems at the beginning, but now I would say that we
+nished it somehow perfectly. All communication seemed to ow well, and
+members were very active in giving their opinions. We held a short meeting at
+rst to divide this long document into many short pieces, then we only focused
+on our own part and took a review to the other parts, this made us work e
+ciently. Overall, the rst phase is a good starting phase for all of us, so I am
+con dent that we can nish this project perfectly."
+
+7.3   CCCCCCCC
+"I entered this project being somewhat unsure of how well we will be able to
+work together as a team. Due to the current COVID-19 events I expected
+some problems with our planning and overall communication. All my worries
+proved to be unfounded. I am happy to say that ever since our rst meeting we
+were able to accomplish our tasks swiftly without compromising the quality of
+our work. Our communication and planning also went smoothly thanks to the
+tools we used to implement in our work ow. Overall I think this rst phase of
+our project was a great success and I am really looking forward to working
+together and seeing this project through."
+
+7.4   DDDDDDDDD
+\I am very excited to have my rst practical experience participating in a soft-ware
+project with my great team. Due to current situation of COVID-19 Pan-demic, it
+was not possible for us to have our rst meeting in person, however we managed
+to organize and plan through our project. Our teamwork went uently by utilizing
+platform as Trello to assign tasks for each member and check the nished tasks.
+We communicated through Slack and kept on giving feedbacks to each other.
+Thankfully, we were always ready to quickly response and improve the quality of
+our project. We nished our rst assignments and expect us to complete the
+upcoming phases of this project without di culties"
+
+7.5   EEEEEEEEE
+"This is the rst software project where I am working together with a team. The
+most exciting part for me was, that we all did not know each other before-
+hand and therefore I was not sure if the project coordination would work out.
+Surprisingly, our rst online meeting was very productive and we were able to
+assign tasks to every group member and that without any con icts. This was
+di erent to other group assignments I did in the past, where I mostly knew my
+fellow group members and we therefore often ended up talking more about
+leisure than about the actual work. Because of this, I am con dent that the
+following weeks are going to be productive and I am looking forward to
+continue working on our project."
+
+
+                                        13
+7.6   FFFFFFF
+"First, I was unsure whether we would manage to organize us as a team due
+to the reduced communication implied by the COVID-19 pandemic. But we
+did a good job without a personal meeting. With the help of the various online
+tools, we could work very e ciently - maybe even more e cient than with a
+regular in-person group meeting. For the situations, where a personal
+discussion was more appropriate, we concluded two Zoom meetings. We
+established some good communication protocols and formed a well-
+organized team, so I expect productive teamwork in the next weeks!"
+
+
+References
+[1] Alessandro Berti, Sebastiaan J. van Zelst, and Wil M. P. van der Aalst.
+    Process mining for python (PM4Py): Bridging the gap between process-
+    and data science. In Proceedings of the ICPM Demo Track 2019, co-
+    located with 1st International Conference on Process Mining (ICPM 2019),
+    Aachen, Germany, June 24-26, 2019., page 13{16, 2019.
+[2] Charles R. Harris, K. Jarrod Millman, Stefan J van der Walt, Ralf
+    Gommers, Pauli Virtanen, David Cournapeau, Eric Wieser, Julian Tay-lor,
+    Sebastian Berg, Nathaniel J. Smith, Robert Kern, Matti Picus, Stephan
+    Hoyer, Marten H. van Kerkwijk, Matthew Brett, Allan Haldane,
+    Jaime Fernandez del R o, Mark Wiebe, Pearu Peterson, Pierre Gerard-
+    Marchant, Kevin Sheppard, Tyler Reddy, Warren Weckesser, Hameer Ab-
+    basi, Christoph Gohlke, and Travis E. Oliphant. Array programming with
+    NumPy. Nature, 585:357{362, 2020.
+[3] Jari Peeperkorn, Seppe vanden Broucke, and Jochen De Weerdt. Con-
+    formance checking using activity and trace embeddings. In Lecture Notes
+    in Business Information Processing, pages 105{121. Springer
+    International Publishing, 2020.
+[4] Ulsan National Institute of Science and Technology.                Pro-
+    cess Mining    at Seoul National University           Bundang Hospi-
+    tal,    2014.          https://www.tf-pm.org/resources/casestudy/
+         process-mining-at-seoul-national-university-bundang-hospital.
+[5] W. van der Aalst, T. Weijters, and L. Maruster. Work ow mining: discov-
+    ering process models from event logs. IEEE Transactions on Knowledge
+    and Data Engineering, 16(9):1128{1142, September 2004.
+[6] Wil van der Aalst. Data Science in Action. Springer Berlin Heidelberg,
+    2016.
+
+
+
+
+                                      14
+

@@ -1,0 +1,379 @@
+Enterprise-Grade Deployment
+Enterprise-Grade Deployment
+
+
+
+• Making the application available in a production-like system:
+
+     Multiple users / connections
+
+     Easy installation
+
+     Data security
+
+     Logging
+
+     Response to D.o.S.
+
+
+
+
+2
+Docker
+
+
+
+• A way to easily pack / deploy applications.
+
+• Someway similar to the concept of virtual machine, but do not involve the kernel stack (share it with the existing
+  OS).
+
+• The application stack (packages, versions) can be completely different from the one of the underlying operating
+  system.
+
+
+
+
+3
+Docker
+              Repository
+
+
+
+
+             Dockerfile
+
+
+
+
+                               A pack containing the
+           Docker Image        desidered application
+                   1
+                               stack.
+
+
+                   N
+                               The desidered application
+         Docker Container(s)   can be run from the image
+                               several times.
+4
+Docker
+
+Writing a Dockerfile
+
+                                                           „Base“ image.
+
+
+                                                           Commands which are executed
+                                                           against the image in order to update it
+                                                           / install new packages.
+
+                                                            Copy the current content of your
+                                                            repository inside the Docker image.
+
+
+
+                       The entrypoint is the command that is executed when
+                       launching a container from this image.
+
+
+5
+How to build an image from the Dockerfile
+• From the root of your repository:
+
+     docker build -t TARGET_IMAGE_NAME –f PATH_TO_THE_DOCKERFILE .
+
+     If the Dockerfile is also in the root of your repository, the –f part can be ignored.
+
+     An image with name TARGET_IMAGE_NAME is eventually created.
+
+
+
+
+6
+Docker
+
+How to run a container from an image
+• Basic command: docker run –name CONTAINER_NAME IMAGE_NAME.
+
+• Runs a container from the image IMAGE_NAME having name CONTAINER_NAME.
+
+• More extensive command:
+  docker run [-d] [-p HOST_PORT:CONTAINER_PORT] [-v HOST_VOLUME:CONTAINER_VOLUME] [--rm] -
+  -name CONTAINER_NAME IMAGE_NAME [COMMAND_TO_BE_EXECUTED_AS_ENTRYPOINT]
+
+
+
+
+7
+Docker
+
+Observations
+• By default, the network layer of a container is completely detached from the network layer of the base operating
+  system.
+
+• By default, the file system of a container is completely independent from the file system of the base operating
+  system.
+
+
+
+
+8
+Docker
+
+Optional Flags
+• -d: runs the container as daemon.
+
+• -p: specifies the mapping between the network ports of the host to the network ports of the container (e.g.
+  Mapping the port 8080 of the host to the port 80 of the container in order to offer some web page).
+
+• -v: specifies the mapping between a folder in the file system of the host to a folder in the file system of the
+  container. This can permit persistency (e.g. if files are created in the container which should be available also to
+  the host / other containers).
+
+• --rm: removes the current container after its execution is terminated.
+
+
+
+
+9
+Docker
+
+What is possible with a container when run
+• Terminating it: docker stop CONTAINER_NAME.
+
+• Executing a command / bash shell against the container: docker exec –it CONTAINER_NAME
+  COMMAND_NAME.
+
+• Seeings its system logs: docker logs CONTAINER_NAME.
+
+• Seeing the list of active containers: docker ps.
+
+
+
+
+10
+Docker
+
+Installation of Docker
+• Docker is available for the mainstream operating systems:
+
+      Linux
+
+      Mac OS X
+
+      Windows (Hyper-V)
+
+
+
+
+11
+Docker Hub
+
+A collection of images which are ready for specific purposes.
+
+
+
+
+12
+Docker Hub
+
+
+
+
+13
+Docker Hub
+
+
+
+
+14
+Docker Hub
+
+
+
+
+15
+Choosing the correct base image
+
+
+
+
+        Flask Standalone              NGINX+UWSGI
+
+
+
+
+     • Less enterprise-grade      • More enterprise-grade
+     • More user-friendly         • Less user-friendly
+
+     Traditional Python image
+     could suffice                Something such as:
+                                  https://hub.docker.com/r/tiangolo/uwsgi-nginx-flask
+
+16
+Docker Hub
+
+Publishing an image on the Docker hub
+1.   Create an account on the Docker hub (e.g. pm4js).
+
+2.   Create a repository on your account (e.g. pm4js-core).
+
+3.   Log-in using the command docker login. The username and the password will be asked.
+
+4.   Tag the image you just built on your personal computer with the name of the account / repository. E.g.
+     docker tag THISIMAGE pm4js/pm4js-core.
+
+5.   Push the tagged image by doing docker push pm4js/pm4js-core.
+
+
+
+
+17
+Docker Hub
+
+
+
+
+18
+Host your containers in the cloud: Heroku
+
+
+
+• Heroku is a platform as a service (PaaS) that enables developers to build, run, and operate applications entirely
+  in the cloud.
+
+• Projects can be deployed there by:
+      Direct connection to the Github repository.
+      Manual pushing the container to Heroku with the command-line interface.
+
+
+
+
+19
+Heroku
+
+Example
+• https://github.com/Javert899/heroku-basic-flask
+
+
+
+
+20
+Heroku
+
+Example
+
+
+
+
+21
+Multi-image application
+
+Different layers can compose an application
+
+
+
+
+       Database
+
+
+                                              Back-end
+
+                                                         Front-end
+
+     Logging System
+
+
+
+
+22
+Docker Compose
+
+
+
+• An easy way to compose together different images that are built for different purposes, e.g.:
+        PostgreSQL for the database.
+        ElasticSearch/LogStash for the logging layer.
+        Flask standalone for the back-end.
+        Apache for the front-end.
+
+• Installation of Docker compose: https://docs.docker.com/compose/install/
+
+
+
+
+23
+Docker Compose
+
+
+
+• Based on the docker-compose.yml file. Specifies the images which are involved in the composition and the
+  parameters to launch the containers.
+
+
+
+
+24
+Docker Compose
+
+Start / stop the Docker composition
+• docker-compose up [-d]
+
+• docker-compose down
+
+
+
+
+25
+Logging
+
+
+
+• Different standard channels of input / output / error:
+      stdin  Standard input.
+      stdout  Standard output.
+      stderr  Standard error.
+
+• If the application is run on Docker, you can access its logs (stdout / stderr) with the command docker logs
+  CONTAINER_NAME.
+
+• This is the simplest way.
+
+
+
+
+26
+Logging
+
+
+
+• If your application is „scattered“ in different components, it makes sense to have a centralized logging system.
+
+• This can for example be realized using LogStash and ElasticSearch.
+
+
+
+
+27
+28
+Security
+
+Mitigating D.o.S. attacks
+• Fail2Ban is an intrusion prevention software framework.
+
+• It monitores different log files for selected entries:
+      Block IP addresses that may attempt to breach system security.
+      Ban IP addresses with too many requests.
+
+• Actions performed using Netfilter/iptables or PF firewall rules.
+
+• Standard filters available also for Apache, SSHD, Postfix ...
+
+• You can install as package in the image and manage the configuration.
+
+
+
+
+29
+

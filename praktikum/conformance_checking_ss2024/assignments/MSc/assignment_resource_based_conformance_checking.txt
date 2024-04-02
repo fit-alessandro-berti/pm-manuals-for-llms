@@ -1,0 +1,19 @@
+﻿Resource-Based Conformance Checking in Celonis
+Conformance Checking is a set of techniques belonging to the Process Mining discipline to compare the behavior of an event log against a de-jure or automatically discovered model to identify anomalies and propose optimizations for the process.
+Celonis provides a rapid-growing software platform for process mining, enabling complex analyses on huge datasets. With the purpose of finding further development scope for conformance checking on big datasets, the following assignment is proposed.
+The resource information is associated with events recorded in popular information systems (ERPs, CRMs) and permits to discover the patterns of collaboration inside and between the organizational units, analyze the workload of the resources, discover the hidden organizational roles ...
+We aim to exploit the resource information for conformance checking in Celonis. Therefore, the students connecting to the platform using Pycelonis or other libraries need to prepare some PQL statements to get the required information from the data models and scripts/applications to elaborate them for the analysis. In particular, some of the following patterns can be considered as they are important for conformance checking:
+* Activities repeated by different resources: identifying the resources leading to a high rework (possibly, their execution of the tasks is not up-to-par).
+* Segregation of duties.
+* Resource-activity performance: identifying the most/least efficient resources based on the execution times of the activities.
+* Deviations in the work pattern: the resource starts to execute activities it never executes usually.
+* Identification of batches: batches are groups of events with the same activity which are executed at a short distance.
+* Deviations in the collaboration patterns: based on popular metrics (handover of work, working together, subcontracting).
+The group of students needs to provide a comprehensive set of techniques for resource-based conformance checking, including the set of PQL queries and the developed scripts/applications.
+Resources:
+- Van Der Aalst, Wil MP, Hajo A. Reijers, and Minseok Song. "Discovering social networks from event logs." Computer Supported Cooperative Work (CSCW) 14.6 (2005): 549-593.
+- Burattin, Andrea, Alessandro Sperduti, and Marco Veluscek. "Business models enhancement through discovery of roles." 2013 IEEE Symposium on Computational Intelligence and Data Mining (CIDM). IEEE, 2013.
+- Pika, Anastasiia, et al. "Mining resource profiles from event logs." ACM Transactions on Management Information Systems (TMIS) 8.1 (2017): 1-30.
+- Yang, Jing, et al. "OrgMining 2.0: A Novel Framework for Organizational Model Mining from Event Logs." arXiv preprint arXiv:2011.12445 (2020).
+- Martin, Niels, et al. "Batch Processing: Definition and Event Log Identification." SIMPDA. 2015.
+- van der Aalst, Wil MP, H. T. De Beer, and Boudewijn F. van Dongen. "Process mining and verification of properties: An approach based on temporal logic." OTM Confederated International Conferences" On the Move to Meaningful Internet Systems". Springer, Berlin, Heidelberg, 2005.

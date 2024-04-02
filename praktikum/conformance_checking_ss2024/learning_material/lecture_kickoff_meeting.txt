@@ -1,0 +1,162 @@
+Conformance Checking in Python
+General Information
+
+Number of Credits & Grades
+BSc Students
+• 6-8 ECTS (depending on your course of study)
+• The grade is based 100% on the assignments/team work
+
+MSc Students
+• 6-8 ECTS (depending on your course of study)
+• The grade is based 60% on the assignments/team work and 40% on a final oral
+presentation.
+
+Special cases
+• Up to 10 ECTS possible  needs to be discussed in detail with the course owners
+
+2
+
+Group Assignments
+
+• All assignments are done in groups.
+• Groups are assigned by topic.
+• Group size:
+
+- ideally MSc groups including 4 students
+- BSc groups including 4-6 students
+
+3
+
+Acknowledgement Document
+
+• You need to sign as-soon-as-possible a document about your acknowledgement of
+the rules of the course.
+• Deadline for Retirement: 30/04/2024, 23:59:59 CET
+• If you want to retire just drop a mail to a.berti@pads.rwth-aachen.de and
+wagner@pads.rwth-aachen.de.
+
+4
+
+Dates of the lab
+• Location (if not announced differently): PADS seminar room (Ahornstrasse 55,
+52074 Aachen, Main Building (2350), Room: 2010).
+• List of collective meetings (also in Moodle Calendar):
+- Thursday 11 April 2024, 14:00 – 14:45
+- Thursday 18 April 2024, 13:30 – 15:15
+- Tuesday 23 April 2024, 14:00 – 14:45
+- Thursday 25 April 2024, 14:00 – 14:45
+- Thursday 30 April 2024, 14:00 – 14:45
+
+Kick-off meeting
+Meetings 1 and 2
+Meeting 3
+Meeting 4
+Meeting 5
+
+• A group-specific meeting will be organized in the time between Thursday 11 April
+2024 and Thursday 18 April 2024 to explain in detail the topic and the
+expectations.
+• Oral exams (MSc): will be in the week between Monday 24 June 2024 and
+Friday 28 June 2024.
+• Deadlines for the milestones are later in these slides.
+
+5
+
+Additional Group Meetings
+
+• In addition to the collective meetings, we offer some “group meeting” which are
+valid as contact hours for all the groups. Each group is mandated to participate to
+at least one of the following meetings:
+- Thursday 16 May 2024, 14:00 – 14:45
+- Thursday 23 May 2024, 14:00 – 14:45
+- Thursday 06 June 2024, 14:00 – 14:45
+- Thursday 13 June 2024, 14:00 – 14:45
+- Thursday 20 June 2024, 14:00 – 14:45
+- Thursday 27 June 2024, 14:00 – 14:45
+
+• Also, each group can ask up to 2 contact hours outside these times.
+
+6
+
+Milestones
+
+• The assignments are composed in different milestones.
+• Milestone 1: Project Setup Document (10 points)
+Expected output: document, Trello dashboard (access granted), Git repo (access
+granted)
+• Milestone 2: Requirements Engineering (10 points)
+Expected output: document
+• Milestone 3-4-5: Sprints (10 points), ideally having a duration of two weeks.
+Expected output: phase review document, code and tests (GIT)
+•
+• Milestone 6: Testing and Assessment (10 points)
+Expected output: assessment document, phase review document, code and test
+
+7
+
+Deadlines for the milestones
+
+• Sunday 21 April 2024, 23:59:59 CET
+Delivery of the project setup document
+• Sunday 28 April 2024, 23:59:59 CET
+Delivery of the requirements engineering document
+• Sunday 12 May 2024, 23:59:59 CET
+Delivery of Sprint 1
+• Sunday 26 May 2024, 23:59:59 CET
+Delivery of Sprint 2
+• Sunday 09 June 2024, 23:59:59 CET
+Delivery of Sprint 3
+• Sunday 23 June 2024, 23:59:59 CET
+Delivery of the Assessment Document
+8
+
+Grading
+Milestones
+• 0-2: the delivered content is unusable/totally incomplete.
+• 2-4: the delivered content covers in minimal part the requests of the assignment.
+• 4-6: the delivered content covers in small part the requests of the assignment.
+• 6-8: the delivered content covers in part the requests of the assignment.
+• 8-10: the delivered content fully satisfies the requests of the assignment.
+
+9
+
+Grading
+Oral Exam
+• 0-9.9: the student is not able to respond to any question, even the most basilar
+ones.
+• 10-19.9: the student can respond only to very basilar questions.
+• 20-29.9: the student can respond in part to the questions of the examiners.
+• 30-40: the student can respond satisfactorily to the questions of the examiners.
+
+10
+
+Grading
+Final Grade
+• MSc: 60% assignments/team work, 40% oral presentation.
+• BSc: 100% assignments/team work.
+• The 100% grade is converted to an official grade using the scale:
+- 0 – 59.9: 5
+- 60 – 64.9: 4
+- 65 – 69.9: 3.7
+- 70 – 74.9: 3.3
+- 75 – 79.9: 3
+- 80 – 83.9: 2.7
+- 84 – 86.9: 2.3
+- 87 – 89.9: 2
+- 90 – 93.9: 1.7
+- 94 – 96.9: 1.3
+- 97 – 100: 1
+
+11
+
+Left things to discuss
+
+• Short introduction of the assignments
+• After the meeting:
+
+- Allocation of the groups
+- Arranging group-kick-off meeting
+
+12
+
+

@@ -1,0 +1,37 @@
+Log Skeleton: an approach for declarative
+conformance checking
+A log skeleton is a declarative process model that has been
+introduced with understandable rules that are useful to classify a
+trace in the language of a process model.
+The goal of the group of students is to understand, master, and
+develop the concept of the log skeleton, exploring both existing and
+new techniques to make it an even more valuable approach.
+In particular, starting from the PM4Py python process mining library,
+different goals to highlight are:
+  - The production of a visualization of the log skeleton model.
+  - The conversion of the log skeleton model to a Petri net with
+    inhibitor and reset arcs.
+  - The implementation of an alignments algorithm given an event
+    log and a log skeleton model (find the best match between the
+    two).
+  - The creation and implementation of a standard to
+    import/export log skeletons (JSON or XML based).
+  - Filtering based on log skeleton.
+An essential point of the project is developing a web interface that
+accepts an event log and shows a visualization of the log skeleton
+model, its conversion to Petri net, and the alignment results.
+Moreover, it should be possible to export the log skeleton from the
+interface.
+The outputs of the project are:
+   The code that implements the chosen subset of functionalities.
+   Documentation about the product (including the requirements
+    engineering).
+   Tests (manual, unit)
+Pointers:
+  - Description of the log skeleton model
+    https://arxiv.org/pdf/1806.08247
+  - Log skeleton filtering http://ceur-ws.org/Vol-2374/paper2.pdf
+  - Log skeleton visualization
+    https://link.springer.com/article/10.1007/s10009-021-00618-y
+  - PM4Py process mining library https://pm4py.fit.fraunhofer.de/
+

@@ -1,0 +1,361 @@
+Introduction to Sprint Planning
+Sprint
+
+Definition
+A sprint consists in an incremental update of a product in order to introduce new
+features, correct bugs or improve the documentation. In the SCRUM methodology,
+each sprint has a duration of two weeks.
+
+• Sprint goal: a sentence describing the goal of the increment.
+
+• Sprint backlog: a set of tasks extracted from the product backlog that are useful
+  to reach the goal.
+
+• Product backlog: the set of tasks executed on the product (including the tasks
+  worked in all the sprints)
+
+
+
+
+                                                                                      2
+Structure
+
+For this practical lab
+
+
+                                 Tasks of
+                                 the first
+                                  sprint
+ Requirements     Tasks of the
+  Engineering       product                  Tasks of the
+   Document         backlog                    second
+                                                sprint
+
+
+
+                                                            Tasks of
+                                                            the third
+                                                              sprint
+
+
+
+
+                                                                        3
+Structure
+
+For this practical lab
+
+
+ Requirements Engineering    Product Backlog
+
+
+        The computation           Implement
+       components of the
+                                   backbone
+       application should
+        be available as a      algorithm based
+       set of web services        on Numpy
+
+
+
+                               Implement web
+                                  services
+                               signature using
+                                   Django
+
+
+
+
+                                                 4
+Structure
+
+Implementing the product backlog in Trello (before sprint nr. 1)
+
+
+  TO-DO                      DOING          READY FOR REVIEW       DONE
+
+   Implement      Task 3
+    backbone
+algorithm based
+   on Numpy       Task 4
+
+Implement web     Task 5
+   services
+signature using
+    Django        Task 6
+
+
+
+
+                                                                     5
+Structure
+
+Implementing the product backlog in Trello (before sprint nr. 1)
+
+
+
+    TO-DO               DOING           READY FOR REVIEW      DONE
+
+    Task 3               Implement
+                          backbone
+                      algorithm based
+    Task 4               on Numpy
+
+
+    Task 5           Implement web
+                        services
+                     signature using
+    Task 6               Django
+
+
+
+
+                                                                     6
+Structure
+
+Implementing the product backlog in Trello (before sprint nr. 1)
+
+
+
+    TO-DO              DOING          READY FOR REVIEW        DONE
+
+    Task 3                                     Implement
+                                                backbone
+                                            algorithm based
+    Task 4                                     on Numpy
+
+
+    Task 5                                 Implement web
+                                              services
+                                           signature using
+    Task 6                                     Django
+
+
+
+
+                                                                     7
+Structure
+
+Implementing the product backlog in Trello (before sprint nr. 1)
+
+
+
+    TO-DO              DOING          READY FOR REVIEW         DONE
+
+    Task 3                                                     Implement
+                                                                backbone
+                                                            algorithm based
+    Task 4                                                     on Numpy
+
+
+    Task 5                                                  Implement web
+                                                               services
+                                                            signature using
+    Task 6                                                      Django
+
+
+
+
+                                                                              8
+Structure
+
+Implementing the product backlog in Trello (before sprint nr. 1)
+
+
+
+    TO-DO              DOING          READY FOR REVIEW         DONE
+
+    Task 5              Task 3                                 Implement
+                                                                backbone
+                                                            algorithm based
+    Task 6              Task 4                                 on Numpy
+
+
+                                                            Implement web
+                                                               services
+                                                            signature using
+                                                                Django
+
+
+
+
+                                                                              9
+Structure
+
+Implementing the product backlog in Trello (before sprint nr. 1)
+
+
+
+    TO-DO              DOING          READY FOR REVIEW         DONE
+
+    Task 5                                                     Implement
+                                                                backbone
+                                                            algorithm based
+    Task 6                                                     on Numpy
+
+
+                                                            Implement web
+                                                               services
+                                                            signature using
+                                                                Django
+
+
+                                                               Task 3
+
+                                                               Task 4
+
+
+
+                                                                              10
+Structure
+
+Implementing the product backlog in Trello (before sprint nr. 1)
+
+
+
+    TO-DO              DOING          READY FOR REVIEW         DONE
+
+                                                               Implement
+                        Task 5                                  backbone
+                                                            algorithm based
+                                                               on Numpy
+                        Task 6
+                                                            Implement web
+                                                               services
+                                                            signature using
+                                                                Django
+
+
+                                                               Task 3
+
+                                                               Task 4
+
+
+
+                                                                              11
+Structure
+
+Implementing the product backlog in Trello (before sprint nr. 1)
+
+
+
+    TO-DO              DOING          READY FOR REVIEW          DONE
+
+                                                               Implement
+                                                                backbone
+                                                            algorithm based
+                                                               on Numpy
+
+
+                                                            Implement web
+                                                               services
+                                                            signature using
+                                                                Django
+
+
+                                                       Task 3        Task 5
+
+                                                       Task 4        Task 6
+
+
+
+                                                                              12
+Trello
+
+Important elements of a task
+• The assignee: the resource(s) responsible of the task  MUST
+
+• The expected time duration of the task (hours)  MUST
+
+• The reporting on the actual time spent on the task when it is done  MUST
+
+• A clear title of the task  MUST
+
+• A clear description (>= 50 words) of the task  MUST
+
+• Category of the task (e.g. frontend, backend) using different colors.
+
+• The link with the item(s) of the requirements engineering
+
+
+
+
+                                                                              13
+Trello
+
+Lab
+Keep the Trello dashboard updated!
+ As in the example.
+
+
+
+
+                                     14
+Trello
+
+Time assignation for the tasks
+• 100% of the time available for the first sprint can be pre-allocated (no time
+  needed for backlog in bug fixes or missing features …)
+• 80% of the time available for the second sprint can be pre-allocated (some bug
+  fixes are expected from the first phase)
+• 50% of the time available for the third sprint can be pre-allocated.
+
+• Divide the tasks according to your personal capabilities in the given time interval,
+  assuming that every member of the group would contribute the same number of
+  hours at the end.
+
+
+
+
+                                                                                         15
+Product/Sprint Backlog
+
+
+
+The product backlog and also the sprint backlog can be modified on-the-fly if the
+initial estimations or set of tasks was wrong.
+Ideally your estimations skills should improve by knowing better each other.
+
+
+
+
+                                                                                    16
+SCRUM methodology
+
+Important people
+Product owner: has the final word about the product backlog and on the fact that
+the goal of a sprint is reached.
+SCRUM master: manages the collaboration inside the team, by ensuring that
+everyone has what is needed to complete the tasks and acting if this does not
+happen.
+Developers: manage the development, test and documentation of the products.
+
+
+
+
+                                                                                   17
+Practical information
+
+How to approach a sprint
+
+• End the requirements engineering document.
+
+• Create the product backlog (Trello).
+
+• Create the sprint backlog of the first sprint (Trello) in the first two days after the
+  submission of the requirements engineering.
+
+• Develop, document, test and push everything in the Github/Gitlab repositories.
+
+• The documentation should at least contain:
+  • Succint description of the increment happened during the SPRINT
+  • How to launch the prototypal product at this stage and which features can be immediately
+    used.
+
+• Upload the phase review to the Moodle activity.
+
+
+
+
+                                                                                               18
+

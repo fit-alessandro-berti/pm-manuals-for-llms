@@ -1,0 +1,331 @@
+             Requirements Engineering
+Conformance checking using activity and trace embeddings
+
+                        Group 5
+
+                     December 2020
+
+
+
+
+                           1
+Contents
+1 Requirements Elicitation and Development                                                                                                        3
+   1.1 Stakeholders . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                       3
+   1.2 Raw Requirements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                           3
+       1.2.1                        Customer Requirements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                       3
+       1.2.2                          User Requirements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                   3
+       1.2.3                       Developer Requirements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                       3
+       1.2.4                         System Requirements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                      4
+   1.3 Requirement Analysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                           4
+   1.4 Allocation and Flow-Down of Requirements . . . . . . . . . . . . . . . . . . . . . . . . . .                                               4
+       1.4.1                               High Level . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             4
+       1.4.2                            Intermediate Level . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                4
+       1.4.3                               Low Level . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            5
+
+2 Functional Model                                                                                                                                5
+  2.1 The model . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                         6
+
+3 Validation and Veri cation of Requirements                                                                                                      7
+
+4 Requirement Management Tools                                                                                                                    7
+  4.1 Jama Software . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                           7
+  4.2 Orcanos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                         7
+  4.3 Caliber                                                                                   ...............................................   7
+  4.4 Pearls                                                                                    ...............................................   7
+
+5 Phase review                                                                                                                                    8
+  5.1 AAAAAAAA . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                                8
+  5.2 BBBBBBBB . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                              8
+  5.3 CCCCCCC . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                                   8
+  5.4 DDDDDDD . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                               8
+  5.5 EEEEEEEE . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                                8
+  5.6 FFFFFFFFFF . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                                8
+
+
+
+
+                                                                         2
+1       Requirements Elicitation and Development
+This phase of requirements engineering begins with identifying stakeholders (various viewpoints) of the
+system and collecting raw requirements from their point of view. Problems of the raw requirements such as
+con icts and lack of details will be resolved after going through requirement analysis. After successful
+analysis, requirements allocation and ow-down will provide a hierarchical structure of requirements, so that
+the analyzed requirements can be adequately ful lled by di erent specialists of the team.
+
+1.1     Stakeholders
+Following stakeholders are identi ed, and their viewpoints will be considered when collecting require-
+ments.
+    • The project team
+    • A1 GmbH company (contact person Alessandro Berti)
+    • The user
+
+1.2     Raw Requirements
+1.2.1    Customer Requirements
+    1. The software works correctly, i.e. it includes tests
+    2. The software uses the PM4Py library
+    3. The software should be able to calculate the followings:
+        (a) trace embeddings and activity with the various methods proposed by Peeperkorn et al.[5]
+        (b) dissimilarity matrix
+        (c) tness and precision
+    4. The software implements di erent similarity measures, such as:
+        (a) Earth Mover’s Distance (EMD)
+        (b) Iterative Constrained Transfers (ICT)
+    5. The software uses an external library for the calculation of the EMD
+    6. Similar traces should yield high similarity measurements
+    7. The library should be designed in a modular way allowing for new trace embeddings and
+       distance measures to be implemented
+    8. The library should have good documentation and be easy to use
+
+1.2.2    User Requirements
+    1. The conformance checking service of the program should be precise
+    2. The software should provide optimal user experiences/interfaces
+    3. The results of the library’s calculations should be consistent and should be saved for further analysis
+    4. The software should be responsive
+
+1.2.3    Developer Requirements
+    1. The code should be of high quality and good maintainability
+    2. The library should use le formats that are consistent with PM4Py
+
+
+
+                                                       3
+        (a) The software should be able to import a process tree
+        (b) The software should be able to import an event log
+
+1.2.4    System Requirements
+  1. The software should work on recent versions of Linux, Windows and macOS.
+  2. The software should support python versions from 3.7
+
+1.3     Requirement Analysis
+After the raw requirements are collected, they have gone through requirement analysis. The viewpoint
+of the A1 GmbH (especially Alessandro Berti) was intensively considered once more. As a result, the
+raw requirements are classi ed into a hierarchical structure, so that implementation workload can be
+divided adequately to team members throughout the development process, for designing and testing.
+
+1.4     Allocation and Flow-Down of Requirements
+The result of the requirement analysis in hierarchical structure will be provided in this section. Hierar-
+chically classi ed requirements will de ne the interaction between applications and subsystems to ful ll
+the requirements of the software [4].
+
+1.4.1    High Level
+H1 The user should be able to con gure representation formats (di erent process models) of the results
+H2 The user should be able to compare results of conformance checking
+H3 The software should be able to perform conformance checking using methods proposed by
+    Peeperkorn et al.[5]
+H5 The software should provide a detailed explanation in error cases caused during software execution
+H6 The software should provide precise, consistent, and reliable results
+H7 The results of the library’s calculations should be saved and be able to be recalled for future analysis
+H8 The software should support various recent operating systems
+H9 The software should be responsive
+H10 The software should provide an optimal user experience
+H11 The software should consist of clean, maintainable code
+H12 The library documentation of the software should provide high readability
+
+1.4.2    Intermediate Level
+I1 The software should implement multiple representation formats for the results (H1)
+I2 Each representation format should be designed for easy interpretation and processing by the user
+     (H1, H2, H10, H12)
+I3 The software should implement multiple conformance checking methods proposed by Peeperkorn
+     et al.[5] (H3)
+I4 The software should be modular to allow for the addition of new methods in the future (H1, H3,
+     H11)
+I5 The library should use an easy to understand and consistent error handling technique (H5)
+I6 There should be an automated test suite for correctness, performance, code style, and platform
+     support (H6, H8, H9, H11)
+
+
+
+                                                      4
+I7 For each representation format there must exist a simple way to persist it. (H2, H7)
+I8 The software should support Python version        3:7 (H8)
+I9 The software should support macOS, Linux and Windows (H8)
+I10 All aspects of the software should be well documented (H10, H11, H12)
+I11 The library should re-use existing software where possible (H6, H10, H11)
+I12 The library should provide methods for importing a process model and event log. (H10)
+
+1.4.3    Low Level
+L1 The library should implement the dissimilarity matrix (I1, I2, I4)
+L2 The library should implement the tness and precision values (I1, I2, I4)
+L3 The software should implement the processing step that transforms data into a format that is suited
+     for EMD calculation (I3, I4)
+L4 The software should implement the processing step that transforms data into a format that is suited
+     for ICT calculation (I3, I4)
+L5 The library should implement the count of words embedding (I3, I4)
+L6 The library should implement the Levenshtein distance (I3, I4)
+L7 The library should use a consistent interface to allow for the addition of future methods for import
+     formats, distance measures, embeddings, and dissimilarity measures (I4)
+L8 The library should use the Python exception handling technique. (I5)
+L9 The library should validate its inputs (I5)
+L10 The test suite should execute unit and integration tests (I6)
+L11 The test suite should simulate di erent python versions (I6, I8)
+L12 The test suite should use a linter to ensure style conformance (I6)
+L13 The test suite should be executed on di erent platforms before release (I6, I9)
+L14 The test suite should check for basic performance measures to ensure responsiveness (I6)
+L15 The software should allow the dissimilarity matrix to be saved and loaded via NumPy (I7)
+L16 The software should allow the tness and precision values to be saved as JSON (I7)
+L17 There should be an API reference (I10)
+L18 There should be a user guide (I10)
+L19 The software should depend on PM4Py [2] (I11)
+L20 The software should depend on NumPy [3] (I11)
+L21 The software should use an external library for the EMD (I11)
+L22 The library should be able to import a process tree (I12)
+L23 The library should be able to import an event log (I12)
+
+
+2       Functional Model
+Functional models are a useful tool in software development as they can help to visualize processes
+in a non-technical way. This way, both developers and stakeholders can easily understand the way
+that the software is supposed to behave.
+For our functional model we identi ed 3 main actors:
+
+
+                                                     5
+  • The client application: this is the software that the clients will be using and from here, the clients
+    make calls to our library.
+  • Our library: this is the library that we are going to implement and it is split into two sub-
+    components:
+        { The main module: this is the component that the client application directly communicates
+           with and which returns the dissimilarity matrix and the tness and precision values. Further,
+           this component makes calls to external libraries and the embedding models to gather all the
+           information that is needed to do the calculations.
+        { The embedding models: this is the component that includes the models that are used to
+           calculate the trace and activity embeddings that are needed to calculate the dissimilarity
+           matrix.
+  • External libraries: this is the library that we are going to use to obtain the playout of the given
+    process model and to calculate the distance measures like the WMD and the ICT.
+      The model was created using cawemo [1].
+
+2.1    The model
+
+
+
+
+                                                    6
+3     Validation and Veri cation of Requirements
+To improve the quality of the requirements of the project, it is important di erent parties involved agree
+that the requirements are stated correctly. Our team had a meeting with A1 GmbH company (contact
+person Alessandro Berti) for necessary feedback, so that our requirements meet our user’s needs. He
+pointed out some improvable changes in our requirements and it has been improved as follows:
+    1. H5 states about a software error and not an error in the data
+    2. H1 states that our software supports di erent types of process-models
+    3. L3 and L4 state that our software does a preprocessing on the data to transform it into suitable
+       input for the calculation of EMD and ICT by an external library
+
+
+4     Requirement Management Tools
+Requirements Engineering is a crucial part of a project. It is also a very dynamic part. New
+requirements can be added, other removed and some can simply have their priority changed. And
+whilst all of this is happening every member of the team must be up-to-date with the state of the
+requirements and their assignment. It is easy to see how this can become quite di cult and this is
+where Requirement Man-agement Tools come in. In this section, we will go over several tools that can
+help manage requirements with ease.
+
+4.1     Jama Software
+Jama Software provides a platform for managing requirements, risk, and tests. This tool is enterprise-
+grade and enables a team to capture and communicate requirements, progress, goals, and
+interdependen-cies. This also has features for reviews, team-collaboration, as well as real-time impact
+analysis that can be very helpful throughout the entire development process. Another important aspect
+of Jama Software is the web-based platform, which means that all team members can have an
+overview of the project from anywhere with a connection to the Internet, without the need for setting
+anything up on a particular machine.
+
+4.2     Orcanos
+Orcanos is a requirement managing tool that puts emphasis on visualization and has an intuitive and
+easy to use interface. This tool o ers end-to-end traceability, test management, and simple
+collaboration tools such as chat and alerts. One interesting feature of this tool is DocGen, which can
+be very helpful for creating the documentation of the project. Orcanos is highly praised by its user for
+the quick and helpful support team.
+
+4.3     Caliber
+Caliber is a tool that o ers great features for the visualization of the requirements. It has a simple drag-and-
+drop interface that makes it easy to use. It allows you to attach images and spreadsheets to requirements
+and o ers impact analysis tools. One major drawback of Caliber is the fact that it does not o er a web-based
+interface, which means that every team member needs to set it up on their machine.
+
+4.4     Pearls
+Pearls is an overall useful and a ordable requirements management tool that emphasizes
+collaboration. It o ers a multitude of features such as noti cations about member activity, comments,
+user role, backlog, speci cation management, and others. One very useful feature is the ability to
+create artifacts such as Use Case Document, Requirements Traceability Matrix, Requirements Speci
+cation Document, etc. with one click after having de ned use cases, actors, conditions, and ows.
+
+
+
+
+                                                       7
+5     Phase review
+5.1   AAAAAAAAAAAA
+"The requirements engineering phase was obviously a bit more challenging then the project initiation
+phase. But we, as a team, have completed the given task in a nice problem-solving manner. We rst
+identi ed what problems we were facing. And then we considered what kind of methods could be
+employed to solve the problems. As a team, it was not hard to come up with strategies and divided the
+workload, so that everything could be done with the help of each teammates. I appreciate that
+everybody was actively participating in the phase, and that everybody was open for feedback from
+others. I expect that we work in such a good collaborative way in remaining phases of project."
+
+5.2   BBBBBBBBBBBB
+"This phase of the tasks was obviously more di cult than the last one, but our team still managed to
+get it done on time. Our communication is still smooth and every member have seriously participated
+in the whole phase. I’m already looking forward to the programming part later on, and I’m sure we as a
+team will be able to complete the whole course successfully."
+
+5.3   CCCCCCCCCCCC
+"This phase of the project de nitely required more teamwork and management than the last one, but I
+still think that we did great. Our communication was on point and everyone accomplished their tasks
+on time, which was essential due to the interdependencies in this particular stage. I am very pleased
+with our ability to work together and accomplish our goals. I’m de nitely looking forward to the next
+stage of our project, since we will be diving into the coding part of the Praktikum."
+
+5.4   DDDDDDDDDDD
+"To develop our product with better quality, our team managed to write the document for requirement
+engineering. With our smooth communication we were able to divide the tasks for each member and
+accomplish each chapter. I appreciate that everyone participated actively in this project and give his
+own opinion on others work. In this state, I am con dent that our team will do great on next stage of
+our project and create a high-quality product."
+
+5.5   EEEEEEEEEEEEE
+"The biggest challenge of the requirements engineering phase was that the di erent sections were
+inter-dependent, e.g. the functional model could only be created after the requirements of our software
+were known. Therefore, the coordination of work was even more important than in the rst phase.
+However, we again mastered this challenge by rst determining the raw requirements together and
+then splitting the remaining work so that all the dependencies were ful lled before starting with a new
+section. As this phase of development set the structure for our future implementation, I am now
+excited to see if everything will go as planned."
+
+5.6   FFFFFFFFFFFFF
+"The requriements engineering phase is a crucial part of the project, as we de ne our upcoming work
+in this phase. Thus it is of high importance do evaluate the requirements carefully and ensure
+completeness. We aimed for completeness by collecting the raw requirements in a group meeting and
+collecting feedback from our supervisor. Due to the serial approach in the paper we had high
+interdependencies between the di erent chapters in this document, but we managed this with a tight
+scheduling of internal deadlines, allowing for a good distribution of the work. I am excited to start
+coding now where we have planned our work in so much detail!"
+
+
+
+
+                                                   8
+References
+[1] Cawemo. https://cawemo.com/. Accessed: 2020-12-21.
+[2] Alessandro Berti, Sebastiaan J. van Zelst, and Wil M. P. van der Aalst. Process mining for python
+    (PM4Py): Bridging the gap between process-and data science. In Proceedings of the ICPM Demo
+    Track 2019, co-located with 1st International Conference on Process Mining (ICPM 2019), Aachen,
+    Germany, June 24-26, 2019., page 13{16, 2019.
+[3] Charles R. Harris, K. Jarrod Millman, Stefan J van der Walt, Ralf Gommers, Pauli Virtanen, David
+    Cournapeau, Eric Wieser, Julian Taylor, Sebastian Berg, Nathaniel J. Smith, Robert Kern, Matti
+    Picus, Stephan Hoyer, Marten H. van Kerkwijk, Matthew Brett, Allan Haldane, Jaime Fernandez
+    del R o, Mark Wiebe, Pearu Peterson, Pierre Gerard-Marchant, Kevin Sheppard, Tyler Reddy,
+    Warren Weckesser, Hameer Abbasi, Christoph Gohlke, and Travis E. Oliphant. Array programming
+    with NumPy. Nature, 585:357{362, 2020.
+[4] Dhirendra Pandey, Ugrasen Suman, and A.K. Ramani. An e ective requirement engineering process
+    model for software development and requirements management. pages 287 { 291, 11 2010.
+
+[5] Jari Peeperkorn, Seppe vanden Broucke, and Jochen Weerdt. Conformance Checking Using
+    Activity and Trace Embeddings, pages 105{121. 09 2020.
+
+
+
+
+                                                  9
+
