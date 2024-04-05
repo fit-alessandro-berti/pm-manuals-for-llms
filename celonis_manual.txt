@@ -332,3 +332,18 @@ pql.add(PQLColumn(name="Case Identifier", query="\"Events\".\"CaseID\""))
 pql.add(PQLColumn(name="Activity", query="\"Events\".\"Activity\""))
 pql.add(PQLColumn(name="Timestamp", query="\"Events\".\"Timestamp\""))
 pql.add(PQLColumn(name="Work in Progress", query="RUNNING_SUM( CASE WHEN INDEX_ACTIVITY_ORDER ( \"Events\".\"Activity\" ) = 1 THEN 1 WHEN INDEX_ACTIVITY_ORDER_REVERSE ( \"Events\".\"Activity\" ) = 1 THEN -1 ELSE 0 END, ORDER BY ( \"Events\".\"Timestamp\" ) )"))
+
+
+OBJECT-CENTRIC DATA MODELS
+
+Celonis offer support for object-centric process mining, in which an event might be related to different objects to different object types.
+The types of data models used for object-centric event data is different than traditional process configurations.
+
+First, every non-alphanumeric and space character should be stripped out from the name of the activity/object type.
+
+The naming convention is strict. It starts from arbitrarily choosing a namespace (only admitted values: “celonis”, “custom”) and creating:
+-	A table "e_<namespace>_<activityname>" for each distinct event type/activity. It should contain at least the columns ID (the event identifier, that can be a self-incremental number only if there is no other specification), Timestamp (also here the names are strict!), and Type (the activity) are required. If there are two activities, let's say "A" and "B", there should be two tables, "e_<namespace>_A" and "e_<namespace"_B".
+-	A table "o_<namespace>_<objtype>" for each distinct object type. It should contain at least the column ID (the object identifier, which should be a string) and Type (the object type). If there are two object types, let's say "order" and "item", there should be two tables, "o_<namespace>_order" and "o_<namespace>_item".
+-	A table "r_e_<namespace>_<activityname>_<objtype>" for each distinct (event type, object type) relationship (E2O relationships). They should contain at least the columns EventID and ObjectID.
+
+To retrieve the list of activities, object types, and event-to-object relationships, you need to download the list of tables of the data model and check whether they start respectively with "e_" (activities), "o_" (object types), "r_e_" (relationships)
