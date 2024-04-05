@@ -140,6 +140,11 @@ pql.add(PQLColumn(name="Activity", query="\"Events\".\"Activity\""))
 pql.add(PQLColumn(name="Timestamp", query="\"Events\".\"Timestamp\""))
 pql.add(PQLFilter(query="\"Events\".\"Activity\" = 'Confirmation of Receipt'"))
 
+The PQL query can be then executed, retrieving a Pandas dataframe, using:
+
+dataframe = data_model.export_data_frame(pql)
+
+
 On a note, the filter cannot be applied on top of the resulting column names, but need to take into account queries to the original table(s).
 
 The following comparison operators are available in PQL:
