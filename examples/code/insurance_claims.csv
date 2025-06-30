@@ -1,0 +1,26 @@
+case:concept:name,concept:name,time:timestamp
+1,Receive Claim,2023-01-01 08:01:00
+1,Check Completeness,2023-01-01 08:10:00
+1,Request Additional Info,2023-01-02 09:00:00
+1,Receive Additional Info,2023-01-03 10:20:00
+1,Assess Claim,2023-01-04 11:00:00
+1,Send Final Letter,2023-01-10 12:00:00
+2,Receive Claim,2023-01-05 08:00:00
+2,Check Completeness,2023-01-05 08:20:00
+2,Assess Claim,2023-01-05 10:00:00
+2,Send Final Letter,2023-01-05 17:00:00
+3,Receive Claim,2023-01-07 10:00:00
+3,Check Completeness,2023-01-07 10:15:00
+3,Request Additional Info,2023-01-07 10:45:00
+3,Receive Additional Info,2023-01-14 09:00:00
+3,Check Completeness,2023-01-14 11:00:00
+3,Assess Claim,2023-01-15 13:00:00
+3,Send Final Letter,2023-01-20 16:00:00
+4,Receive Claim,2023-01-09 09:30:00
+4,Check Completeness,2023-01-09 09:40:00
+4,Assess Claim,2023-01-10 10:00:00
+4,Send Final Letter,2023-03-20 09:00:00
+5,Check Completeness,2023-01-10 10:00:00
+5,Receive Claim,2023-01-10 09:30:00
+5,Assess Claim,2023-01-10 11:00:00
+5,Send Final Letter,2023-01-10 12:00:00
