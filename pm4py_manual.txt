@@ -771,6 +771,20 @@ Specifically, an ET-OT graph is a tuple consisting of:
 - A dictionary associating each relationship to a weight (frequency)
 
 
+# GUIDELINES FOR THE ANALYSIS OF OBJECT-CENTRIC EVENT LOGS
+
+If provided with an object-centric event log, please follow the guidelines.
+
+1) After importing the OCEL object, print it with "print(ocel)" in order to get an idea of the process. You can access the activities with frequency using ocel.events["ocel:activity"].value_counts(), and you can access the object types with frequency using ocel.objects["ocel:type"].value_counts().
+2) At this point, it is advisable that you flatten on specific object types to apply traditional process discovery methods and understand better the process. To this, I would suggest you to:
+2.1) Consider the directly-follows graph of the flattened event log(s): dfg, sa, ea = pm4py.discover_dfg(flattened_log); print(dfg)
+2.2) Consider the log skeleton, which is a simple declarative model, of the flattened event log(s): skel = pm4py.discover_log_skeleton(flattened_log); print(skel)
+3) If there is any lead object type that you can identify for the given process (for example, a "PurchaseOrder" for a P2P process), use the method "pm4py.cluster_equivalent_ocel" to understand the end-to-end process in different clusters. (Take note, that this can be slow for large event logs).
+4) Use the methods "pm4py.discover_otg" and "pm4py.discover_etot" to get insights on the object-to-object relationships and the activities relationships with object types. If needed, construct de-jure OTG and ETOT and use the conformance checking methods.
+
+
+# AVAILABLE METHODS
+
 In the pm4py process mining library, the following methods are available to work on object-centric event logs:
 
 pm4py.read_ocel2(file_path: str, encoding: str = constants.DEFAULT_ENCODING) -> OCEL
@@ -852,7 +866,10 @@ pm4py.ocel_add_index_based_timedelta(ocel: OCEL) -> OCEL
 Adds a small time-delta to the timestamp column based on the current index of the event. This ensures the correct ordering of the events in any object-centric process mining solution.
 
 pm4py.cluster_equivalent_ocel(ocel: OCEL, object_type: str, max_objs: int = sys.maxsize) -> Dict[str, Collection[OCEL]]
-Perform a clustering of the object-centric event log, based on the 'executions' of a single object type. Equivalent 'executions' are grouped in the output dictionary.
+Perform a clustering of the object-centric event log, based on the 'process executions' of a single object type. Equivalent 'process executions' are grouped in the output dictionary.
+Each key is a well-defined tuple structure:
+- The first element is a tuple containing a representation of the sequence of events. Each event is represented by a tuple having as first element the name of the activity followed by all the related object identifiers.
+- The second element is a tuple containing a representation of the sequence of objects. Each object is represented by a tuple having as first element the object identifier and as second element the object type.
 
 pm4py.read_ocel2(file_path: str, encoding: str = constants.DEFAULT_ENCODING) -> OCEL
 Reads an OCEL2.0 event log
