@@ -717,7 +717,58 @@ Moreover, there is an ocel.o2o dataframe containing the object to object (O2O) r
 ---  ------          --------------  -----
  0   ocel:oid        0 non-null      string
  1   ocel:oid_2      0 non-null      string
- 2   ocel:qualifier  0 non-null      float64
+ 2   ocel:qualifier  0 non-null      string
+
+
+# OBJECT-CENTRIC PROCESS MODELS
+
+## OBJECT-CENTRIC DIRECTLY-FOLLOWS GRAPHS
+
+An object-centric directly-follows graph is expressed as a dictionary containing the following properties:
+- activities: set of every activity label in the log.
+- object_types: set of every object type in the log.
+- activities_indep: dictionary with keys events, unique_objects, total_objects; each maps an activity to,
+respectively, the set of event ids, the set of object ids, or the set of (event_id, object_id) pairs linked to that
+activity, independent of object type.
+- activities_ot: same three keys and value types as above, but nested one level deeper by object type (object type →
+activity → set).
+- start_activities and end_activities: same nested structure as activities_ot, but considering only the first or last
+associations of each object.
+- edges: dictionary with keys event_couples, unique_objects, total_objects; each maps an object type to a second
+dictionary whose keys are (source_activity, target_activity) pairs and whose values are, respectively, sets of
+(source_event_id, target_event_id), sets of object ids, or sets of (source_event_id, target_event_id, object_id)
+triples.
+- edges_performance: dictionary with keys event_couples and total_objects; when enabled it mirrors the nesting of
+edges but holds sorted lists of elapsed times (in seconds) between the paired events instead of ids; otherwise the
+inner dictionaries remain empty.
+
+The three metrics are:
+* events => event identifiers involved in the directly-follows relationship
+* unique_objects => object identifiers (counted once) involved in the directly-follows relationship
+* total_objects => object identifiers involved in the directly-follows relationship, counted for all the occurrences
+
+## OTG GRAPHS
+
+An OTG summarizes how object types are related across different interaction graphs extracted from the OCEL.
+Specifically, an OTG is a tuple containing:
+- The set of object types
+- The edges along with the frequency, where each edge is (object_type1, relationship, object_type2).
+
+Relationship can be:
+* object_interaction (objects related in some event)
+* object_descendants (lifecycle of the first event starts before the other object)
+* object_inheritance (lifecycle of the first object ends exactly when the second one starts)
+* object_cobirth (objects start their lifecycle in the same event)
+* object_codeath (objects end their lifecycle in the sae event)
+
+## ETOT GRAPHS
+
+The ET-OT graph captures the relationships between event types and object types along with their frequencies.
+Specifically, an ET-OT graph is a tuple consisting of:
+- Set of activities
+- Set of object types
+- Set of relationships, where an edge (a, ot) indicates that events of type a are associated with objects of type ot
+- A dictionary associating each relationship to a weight (frequency)
 
 
 In the pm4py process mining library, the following methods are available to work on object-centric event logs:
@@ -757,6 +808,21 @@ Discovers an OC-DFG from an object-centric event log.
 
 pm4py.discover_oc_petri_net(ocel: OCEL, inductive_miner_variant: str = "im", diagnostics_with_tbr: bool = False) -> Dict[str, Any]
 Discovers an object-centric Petri net from the provided object-centric event log.
+
+pm4py.discover_otg(ocel: OCEL, variant=None, parameters: Optional[Dict[Any, Any]] = None) -> Tuple[Set[str], Dict[Tuple[str, str, str], int]]:
+Discovers an Object-Type Graph (OTG) from an object-centric event log.
+
+pm4py.discover_etot(ocel: OCEL, variant=None, parameters: Optional[Dict[Any, Any]] = None) -> Tuple[Set[str], Set[str], Set[Tuple[str, str]], Dict[Tuple[str, str], int]]:
+Discovers the ET-OT (Event Type - Object Type) graph from an object-centric event log.
+
+pm4py.conformance_ocdfg(ocel: Union[OCEL, Dict[str, Any]], model: Dict[str, Any], variant=None, parameters: Optional[Dict[Any, Any]] = None) -> Dict[str, Any]:
+Performs OC-DFG-based conformance checking between an object-centric event log (or OC-DFG) and a normative OC-DFG.
+
+pm4py.conformance_otg(ocel: Union[OCEL, Tuple[Set[str], Dict[Tuple[str, str, str], int]]], model: Tuple[Set[str], Dict[Tuple[str, str, str], int]], variant=None, parameters: Optional[Dict[Any, Any]] = None) -> Dict[str, Any]:
+Performs OTG-based conformance checking between an object-centric event log (or OTG) and a normative OTG.
+
+pm4py.conformance_etot(ocel: Union[OCEL, Tuple[Set[str], Set[str], Set[Tuple[str, str]], Dict[Tuple[str, str], int]]], model: Tuple[Set[str], Set[str], Set[Tuple[str, str]], Dict[Tuple[str, str], int]], variant=None, parameters: Optional[Dict[Any, Any]] = None) -> Dict[str, Any]:
+Performs ET-OT-based conformance checking between an object-centric event log (or ET-OT graph) and a normative ET-OT graph.
 
 pm4py.discover_objects_graph(ocel: OCEL, graph_type: str = "object_interaction") -> Set[Tuple[str, str]]
 Discovers an object graph from the provided object-centric event log
