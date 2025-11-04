@@ -793,6 +793,12 @@ Reads an OCEL2.0 event log from the disk
 pm4py.write_ocel2(ocel: OCEL, file_path: str, encoding: str = constants.DEFAULT_ENCODING)
 Writes an OCEL2.0 object to disk
 
+pm4py.read_ocel(file_path: str, objects_path: Optional[str] = None, encoding: str = constants.DEFAULT_ENCODING) -> OCEL:
+Reads an object-centric event log (OCEL 1.0) from a file (see: http://www.ocel-standard.org/). Returns an `OCEL` object.
+
+pm4py.write_ocel(ocel: OCEL, file_path: str, objects_path: str = None, encoding: str = constants.DEFAULT_ENCODING)
+Writes an OCEL object (OCEL 1.0) to disk in various formats. Supported formats include CSV (flat table), JSON-OCEL, XML-OCEL, and SQLite (described on the site https://www.ocel-standard.org/).
+
 pm4py.ocel_get_object_types(ocel: OCEL) -> List[str]
 Gets the list of object types contained in the object-centric event log (e.g., ["order", "item", "delivery"]).
 
