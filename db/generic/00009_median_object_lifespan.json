@@ -1,0 +1,5 @@
+{
+  "name": "Median Object Lifespan (E2O)",
+  "description": "Median time between an object’s first and last related event.",
+  "code": "f = lambda ocel: (ocel.relations.groupby('ocel:oid')['ocel:timestamp'].agg(lambda s: s.max() - s.min())).median()"
+}

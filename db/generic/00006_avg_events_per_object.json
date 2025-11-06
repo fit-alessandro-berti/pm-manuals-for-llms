@@ -1,0 +1,5 @@
+{
+  "name": "Avg Events per Object",
+  "description": "Average count of distinct events linked to an object.",
+  "code": "f = lambda ocel: ocel.relations.groupby('ocel:oid')['ocel:eid'].nunique().reindex(ocel.objects['ocel:oid'].unique(), fill_value=0).mean()"
+}

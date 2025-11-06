@@ -1,0 +1,5 @@
+{
+  "name": "Total Events",
+  "description": "Number of distinct events recorded.",
+  "code": "f = lambda ocel: ocel.events['ocel:eid'].nunique()"
+}

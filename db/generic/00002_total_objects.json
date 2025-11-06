@@ -1,0 +1,5 @@
+{
+  "name": "Total Objects",
+  "description": "Number of distinct objects present.",
+  "code": "f = lambda ocel: ocel.objects['ocel:oid'].nunique()"
+}

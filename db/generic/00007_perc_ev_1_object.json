@@ -1,0 +1,5 @@
+{
+  "name": "\\% Events with >1 Object",
+  "description": "Share of events related to more than one object.",
+  "code": "f = lambda ocel: ocel.relations.groupby('ocel:eid')['ocel:oid'].nunique().reindex(ocel.events['ocel:eid'].unique(), fill_value=0).gt(1).mean()"
+}

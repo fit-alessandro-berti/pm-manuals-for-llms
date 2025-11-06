@@ -1,0 +1,5 @@
+{
+  "name": "Distinct Activities",
+  "description": "Number of unique activity names.",
+  "code": "f = lambda ocel: ocel.events['ocel:activity'].nunique()"
+}

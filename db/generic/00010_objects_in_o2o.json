@@ -1,0 +1,5 @@
+{
+  "name": "\\% Objects Involved in O2O",
+  "description": "Share of objects that appear in at least one O2O link.",
+  "code": "f = lambda ocel: (len(set(ocel.o2o['ocel:oid'].dropna()).union(set(ocel.o2o['ocel:oid_2'].dropna()))) / max(1, ocel.objects['ocel:oid'].nunique()))"
+}

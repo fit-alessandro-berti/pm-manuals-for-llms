@@ -1,0 +1,5 @@
+{
+  "name": "Distinct Object Types",
+  "description": "Number of unique object types.",
+  "code": "f = lambda ocel: ocel.objects['ocel:type'].nunique()"
+}
