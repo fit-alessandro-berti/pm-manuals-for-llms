@@ -1,0 +1,5 @@
+{
+  "name": "\\% Events with No Objects",
+  "description": "Share of events not linked to any object.",
+  "code": "f = lambda ocel: ((~ocel.events['ocel:eid'].isin(ocel.relations['ocel:eid'])).mean() if not ocel.events.empty else 0)"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Average Daily Events",
+  "description": "Mean number of distinct events per day.",
+  "code": "f = lambda ocel: (ocel.events.groupby(ocel.events['ocel:timestamp'].dt.floor('D'))['ocel:eid'].nunique().mean() if not ocel.events.empty else 0)"
+}

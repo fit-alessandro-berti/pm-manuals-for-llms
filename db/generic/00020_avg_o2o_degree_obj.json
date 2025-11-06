@@ -1,0 +1,5 @@
+{
+  "name": "Avg O2O Degree per Object",
+  "description": "Average number of O2O links per object (undirected degree).",
+  "code": "f = lambda ocel: (ocel.o2o[['ocel:oid','ocel:oid_2']].stack().value_counts().reindex(ocel.objects['ocel:oid'].unique(), fill_value=0).mean() if hasattr(ocel,'o2o') and not ocel.o2o.empty else 0)"
+}

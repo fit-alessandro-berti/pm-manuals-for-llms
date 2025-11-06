@@ -1,0 +1,5 @@
+{
+  "name": "Top Activity Share",
+  "description": "Fraction of events belonging to the most frequent activity.",
+  "code": "f = lambda ocel: (ocel.events['ocel:activity'].value_counts(normalize=True).max() if not ocel.events.empty else 0)"
+}

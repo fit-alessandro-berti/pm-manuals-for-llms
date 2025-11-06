@@ -1,0 +1,5 @@
+{
+  "name": "Log Duration",
+  "description": "Total time span covered by the log (end − start).",
+  "code": "f = lambda ocel: ocel.events['ocel:timestamp'].max() - ocel.events['ocel:timestamp'].min()"
+}

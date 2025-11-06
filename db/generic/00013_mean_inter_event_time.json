@@ -1,0 +1,5 @@
+{
+  "name": "Mean Inter-Event Time",
+  "description": "Average time gap between consecutive events (globally).",
+  "code": "f = lambda ocel: ocel.events.sort_values('ocel:timestamp')['ocel:timestamp'].diff().dropna().mean()"
+}

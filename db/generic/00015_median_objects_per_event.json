@@ -1,0 +1,5 @@
+{
+  "name": "Median Objects per Event",
+  "description": "Median distinct objects linked to an event.",
+  "code": "f = lambda ocel: ocel.relations.groupby('ocel:eid')['ocel:oid'].nunique().reindex(ocel.events['ocel:eid'].unique(), fill_value=0).median()"
+}

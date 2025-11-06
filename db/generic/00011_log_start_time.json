@@ -1,0 +1,5 @@
+{
+  "name": "Log Start Time",
+  "description": "Earliest event timestamp in the log.",
+  "code": "f = lambda ocel: ocel.events['ocel:timestamp'].min()"
+}

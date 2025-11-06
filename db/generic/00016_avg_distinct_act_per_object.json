@@ -1,0 +1,5 @@
+{
+  "name": "Avg Distinct Activities per Object",
+  "description": "Average number of different activities touching an object.",
+  "code": "f = lambda ocel: ocel.relations.groupby('ocel:oid')['ocel:activity'].nunique().reindex(ocel.objects['ocel:oid'].unique(), fill_value=0).mean()"
+}

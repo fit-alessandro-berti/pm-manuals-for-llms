@@ -1,0 +1,5 @@
+{
+  "name": "\\% Objects with >1 Activity",
+  "description": "Share of objects involved in more than one activity.",
+  "code": "f = lambda ocel: ocel.relations.groupby('ocel:oid')['ocel:activity'].nunique().reindex(ocel.objects['ocel:oid'].unique(), fill_value=0).gt(1).mean()"
+}
