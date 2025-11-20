@@ -1,0 +1,5 @@
+{
+  "name": "P95 Events per Object",
+  "description": "95th percentile of distinct events per object.",
+  "code": "f = lambda ocel: ocel.relations.groupby('ocel:oid')['ocel:eid'].nunique().reindex(ocel.objects['ocel:oid'].unique(), fill_value=0).quantile(0.95)"
+}
