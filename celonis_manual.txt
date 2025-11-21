@@ -173,7 +173,6 @@ CASE WHEN \"Events\".\"Activity\" = 'Trial' THEN 1 ELSE 0 END
 
 CASE WHEN \"Events\".\"Activity\" = 'Trial' THEN 1 WHEN \"Events\".\"Activity\" = 'Confirm' THEN 2 ELSE 0 END
 
-
 An important operator is REMAP_VALUES, which allows to re-map values of STRING columns.
 For example,
 
@@ -313,11 +312,29 @@ in which MOVING_X can be: MOVING_AVG, MOVING_COUNT_DISTINCT, MOVING_COUNT, MOVIN
 
 start is the start of the window relative to the current row (negative or positive integer)
 end is the end of the window relative to the current row (negative or positive integer)
+Note that the maximum difference between "end" and "start" is 1000 (does not work otherwise).
+So, -500 to 500, or 0 to 1000 should be a safe choice.
 
 RUNNING_SUM (or alternatively RUNNING_TOTAL) returns the sum of all the previous rows.
 The RUNNING_SUM operator accepts also an order on the rows, for example:
 
 RUNNING_SUM(\"Events\".\"Cost\", ORDER BY ( \"Events\".\"Timestamp\" ))
+
+The RUNNING_SUM accepts also a partitioning, example
+
+RUNNING_SUM ( "Table1"."column" , PARTITION BY ( "Table1"."Country" ) )
+
+
+
+WINDOW_AVG computes the average over a user-defined window.
+Examples:
+
+WINDOW_AVG ( "Table"."values" , -1 , 1 , PARTITION BY ( "Table"."code" ) )
+
+Computes the average of the previous, current, and next row, dividing the data into partitions.
+
+Note that the maximum difference between "end" and "start" is 1000 (does not work otherwise).
+So, -500 to 500, or 0 to 1000 should be a safe choice.
 
 
 Other process operators:
@@ -352,3 +369,23 @@ The naming convention is strict. It starts from arbitrarily choosing a namespace
 -	A table "r_e_<namespace>_<activityname>_<objtype>" for each distinct (event type, object type) relationship (E2O relationships). They should contain at least the columns EventID and ObjectID.
 
 To retrieve the list of activities, object types, and event-to-object relationships, you need to download the list of tables of the data model and check whether they start respectively with "e_" (activities), "o_" (object types), "r_e_" (relationships)
+
+The CREATE_EVENTLOG flattens an object-centric data model under an object type to a traditional event log.
+
+Examples:
+
+CREATE_EVENTLOG("o_celonis_SalesOrderItem",INCLUDE["e_celonis_CreateDeliveryItem"]) creates a traditional event log, flattened on the "o_celonis_SalesOrderItem" object type, where all the traditional PQL operators can be applied.
+The flattened log, in this case, includes just the CreateDeliveryItem activity. If the INCLUDE attribute is not specified, then all the activities related to the object type are considered.
+
+Available fields: LEAD_OBJECT_ID, ACTIVITY, TIMESTAMP
+
+CREATE_EVENTLOG("o_celonis_SalesOrderItem",INCLUDE["e_celonis_CreateDeliveryItem"])."LEAD_OBJECT_ID"
+CREATE_EVENTLOG("o_celonis_SalesOrderItem",INCLUDE["e_celonis_CreateDeliveryItem"])."ACTIVITY"
+CREATE_EVENTLOG("o_celonis_SalesOrderItem",INCLUDE["e_celonis_CreateDeliveryItem"])."TIMESTAMP"
+
+If you want to compute the average time between two activities, use the SOURCE-TARGET operators
+
+* Filter on SOURCE("table"."activityfield") == 'firstactivity' (in the flattened log: 'e_custom_firstactivity')
+* Filter on TARGET("table"."activityfield") == 'secondactivity' (in the flattened log: 'e_custom_targetactivity')
+* Measure the average time
+AVG(SECONDS_BETWEEN(SOURCE("table"."timestampfield"), TARGET("table"."timestampfield")))
