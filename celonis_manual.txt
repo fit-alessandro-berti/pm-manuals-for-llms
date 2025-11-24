@@ -138,7 +138,7 @@ pql = PQL()
 pql.add(PQLColumn(name="Case Identifier", query="\"Events\".\"CaseID\""))
 pql.add(PQLColumn(name="Activity", query="\"Events\".\"Activity\""))
 pql.add(PQLColumn(name="Timestamp", query="\"Events\".\"Timestamp\""))
-pql.add(PQLFilter(query="\"Events\".\"Activity\" = 'Confirmation of Receipt'"))
+pql.add(PQLFilter(query="FILTER \"Events\".\"Activity\" = 'Confirmation of Receipt'"))
 
 The PQL query can be then executed, retrieving a Pandas dataframe, using:
 
@@ -192,7 +192,7 @@ PQL reduces the inherent complexity for the user to define PQL queries, so joins
 
 For example, if we want to filter on an attribute at the case level (supposing "Cases" is the case table), the filter would look as follow:
 
-pql.add(PQLFilter(query="\"Cases\".\"Quantity\" >= 500"))
+pql.add(PQLFilter(query="FILTER \"Cases\".\"Quantity\" >= 500"))
 
 When this filter is added, only the events belonging to the cases for which the quantity (defined for instance in the case table) is greater or equal than 500 are kept in the output.
 
